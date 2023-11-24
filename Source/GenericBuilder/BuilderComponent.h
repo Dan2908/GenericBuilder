@@ -32,7 +32,7 @@ public:
 
 	// Takes any location and relocate the held building to the closest grid step subdivision
 	UFUNCTION(BlueprintCallable)
-	void AdjustBuildingPosition(FVector CloseLocation);
+	void AdjustPreviewLocation(FVector CloseLocation);
 
 	// Holds a new building to handle its positioning.
 	// Note: The object must be created outside.
@@ -98,57 +98,3 @@ private:
 	inline void GetRoundedLocation(FVector& WorldLocation);
 	
 };
-
-
-	/*
-	struct CornersOffsets
-	{
-		CornersOffsets(const FVector Location, const ABaseBuilding& Building, const float UnitSize);
-
-		FVector CornerA;
-		FVector CornerB;
-		FVector CornerC;
-		FVector CornerD;
-
-		// Trace raw corners to the ground, to get acturl Location of the corners in the world
-		const bool TraceCornersToGround(UWorld* World);
-		// Returns true if none of the corners differs more then "Tolerance" 
-		inline const bool CheckCornersHeightsV1(const float Tolerance = 25.0f)
-		{
-			const float Avg = GetHeightAverage();
-
-			return (Avg - FMath::Abs(CornerA.Z) < Tolerance)
-				&& (Avg - FMath::Abs(CornerB.Z) < Tolerance)
-				&& (Avg - FMath::Abs(CornerC.Z) < Tolerance)
-				&& (Avg - FMath::Abs(CornerD.Z) < Tolerance);
-		}
-
-		const FRotator GetCorrectedRotation(const FRotator CurrentRotation = FRotator())
-		{
-			// Roll(X) and Pitch(Y)
-			const FVector DiagonalA = (CornerA - CornerD).GetSafeNormal();
-			const FVector DiagonalB = (CornerB - CornerC).GetSafeNormal();
-			FPlane Plane(DiagonalA, CornerC);
-		
-			UE_LOG(LogTemp, Display, TEXT("DiagonalA.Rotation() %s"), *DiagonalA.Rotation().ToString());
-			UE_LOG(LogTemp, Display, TEXT("DiagonalB.Rotation() %s"), *DiagonalB.Rotation().ToString());
-			UE_LOG(LogTemp, Display, TEXT("DiagonalA.Rotation().GetNormalized() %s"), *DiagonalA.Rotation().GetNormalized().ToString());
-			UE_LOG(LogTemp, Display, TEXT("DiagonalB.Rotation().GetNormalized() %s"), *DiagonalB.Rotation().GetNormalized().ToString());
-
-			
-			FRotator PlaneRotation = Plane.Rotation();
-
-			return PlaneRotation;
-		}
-
-	private:
-		//	Calculate raw corners around a center point. These need to be traced to the ground to find the Z location.
-		//  To set the corners to the world, use TraceCornersToGround(World).
-		void CalculateCorners(const FVector& Center, const ABaseBuilding& Building, const float UnitSize);
-		// Get The average height of the corners
-		inline const float GetHeightAverage() 
-		{ 
-			return FMath::Abs((CornerA.Z + CornerB.Z + CornerC.Z + CornerD.Z) / 4); 
-		}
-	};
-	*/

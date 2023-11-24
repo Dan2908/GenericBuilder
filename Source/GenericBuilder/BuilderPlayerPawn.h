@@ -11,6 +11,8 @@
 
 class ABuilderPlayerController;
 class ABaseBuilding;
+class UBuilderInputCollection;
+
 
 UCLASS()
 class GENERICBUILDER_API ABuilderPlayerPawn : public APawn
@@ -57,6 +59,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CallBuildMode(UClass* BuildingClass);
 
+	UPROPERTY(EditAnywhere, Category = "Player Input")
+	TSubclassOf<UBuilderInputCollection> InputCollectionClass;
+
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -87,27 +92,8 @@ private:
 	float HeldBuildingRotSpeed = 200;
 	// INPUT *****
 
-	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputMappingContext* MappingContext;
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* MoveAction;
-	/** Rotate Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* RotateAction;
-	/** Zoom Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* ZoomAction;
-	/** Rotate building Action when contructing */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* RotateHeldBuildingAction;
-	/** Normally click press, when to trigger a building or a demolition */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* ConfirmAction;
-	/** Cancel action, for example quit placin a building */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	class UInputAction* EscapeAction;
+	UPROPERTY(VisibleAnywhere, Category = "Player Input")
+	UBuilderInputCollection* InputCollection;
 
 	ABuilderPlayerController* MyController;
 

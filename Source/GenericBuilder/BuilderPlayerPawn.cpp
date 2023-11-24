@@ -13,10 +13,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Helpers/BuilderInputCollection.h"
 
-// ---------------------------------------------------------------
-// -------------------------- PUBLIC --------------------------
-// ---------------------------------------------------------------
 
 // Sets default values
 ABuilderPlayerPawn::ABuilderPlayerPawn()
@@ -53,17 +51,20 @@ void ABuilderPlayerPawn::Tick(float DeltaTime)
 // Called to bind functionality to input
 void ABuilderPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	InputCollection = NewObject<UBuilderInputCollection>(this, InputCollectionClass);
+	
+	ensure(InputCollection);
+
+	InputCollection->StartInputObject(PlayerInputComponent, Controller);
+
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		//Move
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::Move);
-		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::Rotate);
-		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::Zoom);
-		EnhancedInputComponent->BindAction(RotateHeldBuildingAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::RotateHeldBuilding);
-		EnhancedInputComponent->BindAction(ConfirmAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::Confirm);
-		EnhancedInputComponent->BindAction(EscapeAction, ETriggerEvent::Triggered, this, &ABuilderPlayerPawn::Escape);
-	}
+	InputCollection->BindTriggerAction(this, InputCollection->MoveAction, &ABuilderPlayerPawn::Move);
+	InputCollection->BindTriggerAction(this, InputCollection->RotateAction, &ABuilderPlayerPawn::Rotate);
+	InputCollection->BindTriggerAction(this, InputCollection->ZoomAction, &ABuilderPlayerPawn::Zoom);
+	InputCollection->BindTriggerAction(this, InputCollection->RotateHeldBuildingAction, &ABuilderPlayerPawn::RotateHeldBuilding);
+	InputCollection->BindTriggerAction(this, InputCollection->ConfirmAction, &ABuilderPlayerPawn::Confirm);
+	InputCollection->BindTriggerAction(this, InputCollection->EscapeAction, &ABuilderPlayerPawn::Escape);
+
 }
 // ---------------------------------------------------------------
 
@@ -91,19 +92,15 @@ void ABuilderPlayerPawn::HandleHeldBuilding()
 	{
 		return;
 	}
+
 	// Adjust the location to the grid.
-	BuilderComponent->AdjustBuildingPosition(Location);
+	BuilderComponent->AdjustPreviewLocation(Location);
 
 	const bool CanBuild = BuilderComponent->GetCanBuildHere();
 	
 	BuilderComponent->SetBuildingAspect(CanBuild);
 
 }
-// ---------------------------------------------------------------
-
-
-// ---------------------------------------------------------------
-// -------------------------- PROTECTED --------------------------
 // ---------------------------------------------------------------
 
 // Called when the game starts or when spawned
@@ -113,16 +110,6 @@ void ABuilderPlayerPawn::BeginPlay()
 
 	MyController = CastChecked<ABuilderPlayerController>(Controller);
 
-	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(MappingContext, 0);
-		}
-	}
-
-	// Make sure Zoom is inbounds
 	AddZoom(0);
 
 }
@@ -195,7 +182,6 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 
 }
 // ---------------------------------------------------------------
-
 
 // Confirm building, removal, etc
 void ABuilderPlayerPawn::Escape(const FInputActionValue& Value)

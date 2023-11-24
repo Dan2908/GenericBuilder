@@ -43,6 +43,9 @@ public:
 	// Returns true if controller is in building mode. False otherwise.
 	UFUNCTION(BlueprintCallable)
 	const bool IsInBuildingMode();
+	// Check if the mouse movement wasn't nearly zero
+	const bool GetDidNotMove();
+
 private:
 
 	EControlMode ControlMode = EControlMode::Default;

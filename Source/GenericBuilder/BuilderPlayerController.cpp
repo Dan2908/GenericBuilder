@@ -17,6 +17,8 @@ inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
 void ABuilderPlayerController::SetDefaultMode()
 {
 	ControlMode = EControlMode::Default;
+	// Show cursor
+	SetShowMouseCursor(true);
 
 }
 // ---------------------------------------------------------------
@@ -45,11 +47,26 @@ const bool ABuilderPlayerController::IsInBuildingMode()
 }
 // ---------------------------------------------------------------
 
+// TODO: Correct this, mouse delta seems to always return 0.
+// Check if the mouse movement wasn't nearly zero
+const bool ABuilderPlayerController::GetDidNotMove()
+{
+	FVector2D MouseDelta;
+	GetInputMouseDelta(MouseDelta.X, MouseDelta.Y);
+
+	UE_LOG(LogTemp, Display, TEXT("MouseDelta.X = %f"), MouseDelta.X);
+	UE_LOG(LogTemp, Display, TEXT("MouseDelta.Y = %f"), MouseDelta.Y);
+	return FMath::IsNearlyZero(MouseDelta.X) && FMath::IsNearlyZero(MouseDelta.Y);
+}
+// ---------------------------------------------------------------
+
 // Sets control to "Building Mode"
 void ABuilderPlayerController::SetBuildMode()
 {
 	// Set build mode
 	ControlMode = EControlMode::BuildMode;
+	// Hide cursor
+	SetShowMouseCursor(false);
 }
 // ---------------------------------------------------------------
 

@@ -41,7 +41,6 @@ struct FDynamicMaterialInfo
 // Struct FBuildingAttributes
 // --------------------------
 
-
 USTRUCT(BlueprintType)
 struct FBuildingAttributes
 {
@@ -104,6 +103,5 @@ private:
 
 	// Material Instance Dynamic
 	TArray<class UMaterialInstanceDynamic*> MIDs;
-
 
 };

@@ -4,10 +4,6 @@
 #include "BaseBuilding.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-// ---------------------------------------------------------------
-// -------------------------- PUBLIC --------------------------
-// ---------------------------------------------------------------
-
 
 // Sets default values
 ABaseBuilding::ABaseBuilding()
@@ -40,10 +36,6 @@ void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
 }
 // ---------------------------------------------------------------
 
-
-// ---------------------------------------------------------------
-// -------------------------- PROTECTED --------------------------
-// ---------------------------------------------------------------
 
 // Called when the game starts or when spawned
 void ABaseBuilding::BeginPlay()

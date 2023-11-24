@@ -13,9 +13,6 @@
 #include "Helpers/Tracer.h"
 #include <set>
 
-// ---------------------------------------------------------------
-// -------------------------- PUBLIC --------------------------
-// ---------------------------------------------------------------
 
 // Sets default values for this component's properties
 UBuilderComponent::UBuilderComponent()
@@ -50,9 +47,10 @@ void UBuilderComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 // ---------------------------------------------------------------
 
 // Takes any location and relocate the held building to the closest grid step subdivision
-void UBuilderComponent::AdjustBuildingPosition(FVector CloseLocation)
+void UBuilderComponent::AdjustPreviewLocation(FVector CloseLocation)
 {
 	GetRoundedLocation(CloseLocation);
+
 	HeldBuilding->SetActorLocation(CloseLocation);
 
 }
@@ -106,7 +104,12 @@ const bool UBuilderComponent::GetCanBuildHere()
 
 	Tracer BuildTracer(GetWorld(), HeldBuilding->GetActorTransform(), Extents.X, Extents.Y);
 
-	const bool IsLandOk = BuildTracer.GetMaxHeightDistance() < MaxCornerDifference;
+	// TODO: Do this elsewhere
+	// Correct preview z position
+	const FVector PreviewLocation = HeldBuilding->GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
+	HeldBuilding->SetActorLocation(PreviewLocation);
+
+	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
 	const bool IsObstructed = IsPlaceObstructed();
 
 	if (!IsLandOk)

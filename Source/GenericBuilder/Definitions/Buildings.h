@@ -1,4 +1,4 @@
-// Danilo Brandolin
+// Author: Danilo Brandolin
 
 #pragma once
 
