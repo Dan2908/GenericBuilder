@@ -76,23 +76,23 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UBuilderComponent* BuilderComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Player Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float CameraSpeed = 800;
 
-	UPROPERTY(EditAnywhere, Category = "Player Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float CameraRotationSpeed = 2;
 
-	UPROPERTY(EditAnywhere, Category = "Player Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float CameraZoomSpeed = 500;
 
-	UPROPERTY(EditAnywhere, Category = "Player Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	FVector2D CameraZoomMinMax = FVector2D(300, 1500);
 
-	UPROPERTY(EditAnywhere, Category = "Player Movement")
+	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float HeldBuildingRotSpeed = 200;
 	// INPUT *****
 
-	UPROPERTY(VisibleAnywhere, Category = "Player Input")
+	UPROPERTY(VisibleAnywhere, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	UBuilderInputCollection* InputCollection;
 
 	ABuilderPlayerController* MyController;

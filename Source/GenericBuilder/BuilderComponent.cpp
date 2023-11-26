@@ -12,6 +12,7 @@
 #include <Components/BoxComponent.h>
 #include "Helpers/Tracer.h"
 #include <set>
+#include "Styling/SlateBrush.h"
 
 
 // Sets default values for this component's properties

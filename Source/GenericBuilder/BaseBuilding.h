@@ -37,33 +37,6 @@ struct FDynamicMaterialInfo
 
 };
 
-// --------------------------
-// Struct FBuildingAttributes
-// --------------------------
-
-USTRUCT(BlueprintType)
-struct FBuildingAttributes
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	FName Name;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	TEnumAsByte<EBuildings> Identifier;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	TEnumAsByte<EBuildingType> Type;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	float ConstructionCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	FVector2D Extents;
-
-	int OwnerIndex;
-};
-
 
 // ---------------------------------
 // ------ CLASS ABaseBuilding ------
@@ -88,18 +61,15 @@ public:
 	// Sets the building appearance, this is used to create the "placing" aspect
 	void SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo);
 	// Get Buildiung extents
-
-
-	// TODO: replace current BuildingXYExtent with the extents within BuildingInfo
-	inline const FVector2D& GetXYExtents() { return Info.Extents; }
+	inline const FVector2D& GetXYExtents() { return Extents; }
 
 private:
 	// Base mesh
 	UPROPERTY(VisibleAnywhere, Category = "Building Adjustments")
 	UStaticMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "Building Information")
-	FBuildingAttributes Info;
+	UPROPERTY(EditAnywhere, Category = "Building Attributes")
+	FVector2D Extents;
 
 	// Material Instance Dynamic
 	TArray<class UMaterialInstanceDynamic*> MIDs;

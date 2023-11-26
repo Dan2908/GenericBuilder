@@ -8,6 +8,9 @@
 
 class ABuilderPlayerPawn;
 class ABaseBuilding;
+class UBuildingCollection;
+struct FBuildingInformation;
+
 /**
  * 
  */
@@ -30,7 +33,13 @@ public:
 
 	inline const int GetPlayerIndex(ABuilderPlayerPawn* Player) const;
 
+	UFUNCTION(BlueprintCallable)
+	const TArray<FBuildingInformation> GetAvailableBuildings();
+
 private:
+
+	UPROPERTY(EditAnywhere, Category = "Builder Settings")
+	TSubclassOf<UBuildingCollection> BuildingCollection;
 	// Overall Size of the grid in lands, this grid size is multiplied by the BuildingXYExtent
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Builder Settings", meta = (AllowPrivateAccess = "true"))
 	float GridUnitSize = 50.0f;

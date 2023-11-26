@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
-enum EBuildings
+enum EBuildingID
 {
-	House,
+	LHouse,
 	Building_Six_Silos
 };

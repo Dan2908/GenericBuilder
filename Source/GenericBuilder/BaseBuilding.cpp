@@ -2,8 +2,11 @@
 // 11/13/2023
 
 #include "BaseBuilding.h"
-#include "Materials/MaterialInstanceDynamic.h"
 
+#include "Brushes/SlateImageBrush.h"
+#include "BuildingCollection.h"
+#include "Engine/Texture2D.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 // Sets default values
 ABaseBuilding::ABaseBuilding()
@@ -36,7 +39,6 @@ void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
 }
 // ---------------------------------------------------------------
 
-
 // Called when the game starts or when spawned
 void ABaseBuilding::BeginPlay()
 {
@@ -47,6 +49,7 @@ void ABaseBuilding::BeginPlay()
 	{
 		MIDs.Push(Mesh->CreateAndSetMaterialInstanceDynamic(i));
 	}
+
 }
 // ---------------------------------------------------------------
 
