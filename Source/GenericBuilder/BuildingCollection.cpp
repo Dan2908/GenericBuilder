@@ -3,47 +3,64 @@
 
 #include "BuildingCollection.h"
 
+#include "Helpers/ResourceCollection.h"
 #include "BaseBuilding.h"
 #include "Engine/Texture2D.h"
 
 // Constructor
 UBuildingCollection::UBuildingCollection()
 {
-	// Sort buildings array
-	SortByID(1, false);
 }
 // ---------------------------------------------------------------
 
-
-// Recursive swap sort for building array
-void UBuildingCollection::SortByID(const int Index, bool Changed)
+// Update const values when property has changed.
+void UBuildingCollection::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
-	// Reached end
-	if (Index >= AvailableBuildings.Num())
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	const bool AddedArray = PropertyChangedEvent.ChangeType == EPropertyChangeType::ArrayAdd;
+	const bool AddedBuilding = AddedArray && PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UBuildingCollection, AvailableBuildings);
+
+	// if a new building is added in the editor, fill IDs and the cost array for it.
+	if (AddedBuilding)
 	{
-		if (Changed)
-		{
-			SortByID(1, Changed);
-		}
-			
+		InitializeCostArray(AvailableBuildings.Num() - 1);
+		InitializeIDs();
+	}
+
+}
+// ---------------------------------------------------------------
+
+// Fills the cost array for the building specified. With error print in case it fails.
+void UBuildingCollection::InitializeCostArray(const int Index)
+{
+	if (!AvailableBuildings.IsValidIndex(Index))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UBuildingCollection::FillCostArray - Invalid Building index %d"), Index);
 		return;
-
 	}
 
-	// Change when element N is less than element N-1
-	Changed = (AvailableBuildings[Index].Identifier < AvailableBuildings[Index - 1].Identifier);
-
-	if (Changed)
+	if (UResourceCollection* Resources = ResourceCollection.GetDefaultObject())
 	{
-		AvailableBuildings.Swap(Index, Index - 1);
+		Resources->FillDefaultResourceData(AvailableBuildings[Index].ConstructionCost);
 	}
-	// Check next element.
-	SortByID(Index + 1, Changed);
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UBuildingCollection::FillCostArray - No resource collection found!"));
+	}
 
 }
 // ---------------------------------------------------------------
 
-inline const bool FBuildingInformation::operator==(TSubclassOf<ABaseBuilding>& OtherBuilding)
+// Initializes all the building IDs, corresponding to its index in the array
+void UBuildingCollection::InitializeIDs()
 {
-	return OtherBuilding == BaseBuilding;
+	// Set IDs
+	int ID = 0;
+	for (FBuildingDetails& Details : AvailableBuildings)
+	{
+		Details.Identifier = ID;
+		++ID;
+	}
 }
+// ---------------------------------------------------------------

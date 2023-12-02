@@ -4,43 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Definitions/Buildings.h"
-#include "Definitions/BuildingTypes.h"
+#include "Definitions/BuildingDetails.h"
 
 #include "BuildingCollection.generated.h"
 
 class ABaseBuilding;
 class UTexture2D;
-
-/**
- * Structure that holds in Game details and information of the building.
- */
-USTRUCT(BlueprintType)
-struct FBuildingInformation
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	FName Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	TEnumAsByte<EBuildingID> Identifier;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	TEnumAsByte<EBuildingType> Type;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	float ConstructionCost;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	UTexture2D* Thumbnail;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	TSubclassOf<ABaseBuilding> BaseBuilding;
-
-	inline const bool operator==(TSubclassOf<ABaseBuilding>& OtherBuilding);
-
-};
+class UResourceCollection;
 
 /** 
 	This object is meant to hold a list of building class references the can be assigned to a level/gamemode.
@@ -55,14 +25,19 @@ public:
 
 	// Constructor
 	UBuildingCollection();
-
-	// List of buildings available in this collection
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buildings Available")
-	TArray<FBuildingInformation> AvailableBuildings;
+	// Update const values when property has changed.
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent);
+	// List of buildings available in this collection.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
+	TArray<FBuildingDetails> AvailableBuildings;
 
 private:
 
-	// TODO: Check if necessary, the idea is to find a way to look for information quicky, but the TArray Find method could be good for this case.
-	// Recursive swap sort for building array
-	void SortByID(const int Index, bool Changed);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UResourceCollection> ResourceCollection;
+	// Fills the cost array for the building specified. With error print in case it fails.
+	void InitializeCostArray(const int Index);
+	// Initializes all the building IDs, corresponding to its index in the array
+	void InitializeIDs();
+
 };

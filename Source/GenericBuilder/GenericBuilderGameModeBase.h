@@ -4,12 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+
 #include "GenericBuilderGameModeBase.generated.h"
 
 class ABuilderPlayerPawn;
 class ABaseBuilding;
 class UBuildingCollection;
-struct FBuildingInformation;
+class UResourceCollection;
+
+struct FBuildingDetails;
+struct FResourceType;
 
 /**
  * 
@@ -34,12 +38,20 @@ public:
 	inline const int GetPlayerIndex(ABuilderPlayerPawn* Player) const;
 
 	UFUNCTION(BlueprintCallable)
-	const TArray<FBuildingInformation> GetAvailableBuildings();
+	const TArray<FBuildingDetails> GetAvailableBuildings();
+
+	UFUNCTION(BlueprintCallable)
+	const TArray<FResourceType>& GetAvailableResources();
 
 private:
 
+	// Collection of buildings used in this mode
 	UPROPERTY(EditAnywhere, Category = "Builder Settings")
 	TSubclassOf<UBuildingCollection> BuildingCollection;
+	// Collection of resources used in this mode
+	UPROPERTY(EditAnywhere, Category = "Builder Settings")
+	TSubclassOf<UResourceCollection> ResourceCollection;
+
 	// Overall Size of the grid in lands, this grid size is multiplied by the BuildingXYExtent
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Builder Settings", meta = (AllowPrivateAccess = "true"))
 	float GridUnitSize = 50.0f;

@@ -215,9 +215,11 @@ const float ABuilderPlayerPawn::GetFloorOffset()
 {
 	FHitResult Hit;
 	// Get a point up and a point down the pawn
-	const FVector AbovePoint = GetActorLocation() + FVector::UpVector * 1000;
+	const FVector UpPoint = GetActorLocation() +  FVector::UpVector * 1000;
+	const FVector BottomPoint = GetActorLocation() -  FVector::UpVector * 1000;
+
 	// Trace with "Landscape" channel
-	if (!GetWorld()->LineTraceSingleByChannel(Hit, AbovePoint, -AbovePoint, ECollisionChannel::ECC_GameTraceChannel1))
+	if (!GetWorld()->LineTraceSingleByChannel(Hit, UpPoint, BottomPoint, ECollisionChannel::ECC_GameTraceChannel1))
 	{
 		return 0.0f;
 	}

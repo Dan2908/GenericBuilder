@@ -6,6 +6,9 @@
 #include "BaseBuilding.h"
 #include "BuilderPlayerPawn.h"
 #include "BuildingCollection.h"
+#include "Helpers/ResourceCollection.h"
+#include "Definitions/BuildingDetails.h"
+
 
 void AGenericBuilderGameModeBase::NewBuilding(ABaseBuilding* Target)
 {
@@ -23,8 +26,13 @@ inline const int AGenericBuilderGameModeBase::GetPlayerIndex(ABuilderPlayerPawn*
 	return (Result ? *Result : -1 );
 }
 
-const TArray<FBuildingInformation> AGenericBuilderGameModeBase::GetAvailableBuildings()
+const TArray<FBuildingDetails> AGenericBuilderGameModeBase::GetAvailableBuildings()
 {
 	return BuildingCollection.GetDefaultObject()->AvailableBuildings;
 
+}
+
+const TArray<FResourceType>& AGenericBuilderGameModeBase::GetAvailableResources()
+{
+	return ResourceCollection.GetDefaultObject()->GetResourceList();
 }

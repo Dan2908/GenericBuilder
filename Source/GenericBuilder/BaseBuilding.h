@@ -5,8 +5,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Definitions/BuildingTypes.h"
-#include "Definitions/Buildings.h"
 
 #include "BaseBuilding.generated.h"
 
