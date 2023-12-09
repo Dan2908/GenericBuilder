@@ -5,9 +5,8 @@
 
 #include "BaseBuilding.h"
 #include "BuilderPlayerPawn.h"
-#include "BuildingCollection.h"
-#include "Helpers/ResourceCollection.h"
-#include "Definitions/BuildingDetails.h"
+#include "Game/BuildingCollection.h"
+#include "Game/ResourceCollection.h"
 
 
 void AGenericBuilderGameModeBase::NewBuilding(ABaseBuilding* Target)
@@ -26,13 +25,21 @@ inline const int AGenericBuilderGameModeBase::GetPlayerIndex(ABuilderPlayerPawn*
 	return (Result ? *Result : -1 );
 }
 
-const TArray<FBuildingDetails> AGenericBuilderGameModeBase::GetAvailableBuildings()
+const TArray<FBuildingAssetInfo>& AGenericBuilderGameModeBase::GetAvailableBuildings()
 {
-	return BuildingCollection.GetDefaultObject()->AvailableBuildings;
+	return BuildingCollection.GetDefaultObject()->GetBuildings();
 
 }
 
-const TArray<FResourceType>& AGenericBuilderGameModeBase::GetAvailableResources()
+const TArray<FResourceAssetInfo>& AGenericBuilderGameModeBase::GetAvailableResources()
 {
-	return ResourceCollection.GetDefaultObject()->GetResourceList();
+	return ResourceCollection.GetDefaultObject()->GetResources();
+}
+
+// Gets Default Resource Collection set in this game mode.
+// Resturns nullptr if not set
+inline UResourceCollection* AGenericBuilderGameModeBase::GetDefaultResourceCollection()
+{
+	return ResourceCollection.GetDefaultObject();
+
 }

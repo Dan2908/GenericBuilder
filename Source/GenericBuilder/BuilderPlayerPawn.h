@@ -12,7 +12,7 @@
 class ABuilderPlayerController;
 class ABaseBuilding;
 class UBuilderInputCollection;
-
+class UPlayerVault;
 
 UCLASS()
 class GENERICBUILDER_API ABuilderPlayerPawn : public APawn
@@ -48,6 +48,8 @@ protected:
 	// Confirm building, removal, etc
 	void Escape(const FInputActionValue& Value);
 
+	// Initializes the Vault Object
+	void InitializePlayerVault();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -75,6 +77,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBuilderComponent* BuilderComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	UPlayerVault* VaultComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float CameraSpeed = 800;

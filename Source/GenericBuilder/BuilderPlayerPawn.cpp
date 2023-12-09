@@ -14,6 +14,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Helpers/BuilderInputCollection.h"
+#include "PlayerVault.h"
 
 
 // Sets default values
@@ -32,6 +33,8 @@ ABuilderPlayerPawn::ABuilderPlayerPawn()
 	Camera->SetupAttachment(SpringArm);
 
 	BuilderComponent = CreateDefaultSubobject<UBuilderComponent>(FName("Building Component"));
+
+	VaultComponent = CreateDefaultSubobject<UPlayerVault>(FName("Vault Component"));
 }
 // ---------------------------------------------------------------
 
@@ -110,10 +113,11 @@ void ABuilderPlayerPawn::BeginPlay()
 
 	MyController = CastChecked<ABuilderPlayerController>(Controller);
 
+	InitializePlayerVault();
+
 	AddZoom(0);
 
 }
-// ---------------------------------------------------------------
 
 // Move the pawn always snapped to the landscape
 void ABuilderPlayerPawn::Move(const FInputActionValue& Value)
@@ -196,6 +200,28 @@ void ABuilderPlayerPawn::Escape(const FInputActionValue& Value)
 	// Set default control mode
 	MyController->SetDefaultMode();
 
+}
+// ---------------------------------------------------------------
+
+// Initializes the Vault Object
+void ABuilderPlayerPawn::InitializePlayerVault()
+{
+	// initialize Vault
+	if (AGenericBuilderGameModeBase* GM = Cast<AGenericBuilderGameModeBase>(GetWorldSettings()->DefaultGameMode.GetDefaultObject()))
+	{
+		if (UResourceCollection* RC = GM->GetDefaultResourceCollection())
+		{
+			VaultComponent->InitializeVault(*RC);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("%s - Can't get resourse collection for the current GameMode"), *GetName());
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s - Can't get a proper Generic Builder Game Mode"), *GetName());
+	}
 }
 // ---------------------------------------------------------------
 

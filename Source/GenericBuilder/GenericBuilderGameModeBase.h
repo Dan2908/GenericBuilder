@@ -12,8 +12,10 @@ class ABaseBuilding;
 class UBuildingCollection;
 class UResourceCollection;
 
-struct FBuildingDetails;
-struct FResourceType;
+struct FBuildingAssetInfo;
+struct FResourceAssetInfo;
+struct FResourceRep;
+
 
 /**
  * 
@@ -23,6 +25,8 @@ class GENERICBUILDER_API AGenericBuilderGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+	typedef TArray<FResourceRep> FResourceData;
+
 public:
 
 	// Get the size of the minimum step adjusted to the landscape Grid.
@@ -38,10 +42,14 @@ public:
 	inline const int GetPlayerIndex(ABuilderPlayerPawn* Player) const;
 
 	UFUNCTION(BlueprintCallable)
-	const TArray<FBuildingDetails> GetAvailableBuildings();
+	const TArray<FBuildingAssetInfo>& GetAvailableBuildings();
 
 	UFUNCTION(BlueprintCallable)
-	const TArray<FResourceType>& GetAvailableResources();
+	const TArray<FResourceAssetInfo>& GetAvailableResources();
+
+	// Gets Default Resource Collection set in this game mode.
+	// Resturns nullptr if not set
+	inline UResourceCollection* GetDefaultResourceCollection();
 
 private:
 

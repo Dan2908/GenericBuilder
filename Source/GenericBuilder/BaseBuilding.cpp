@@ -4,7 +4,7 @@
 #include "BaseBuilding.h"
 
 #include "Brushes/SlateImageBrush.h"
-#include "BuildingCollection.h"
+#include "Game/BuildingCollection.h"
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
