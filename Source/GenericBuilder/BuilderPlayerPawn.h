@@ -13,6 +13,8 @@ class ABuilderPlayerController;
 class ABaseBuilding;
 class UBuilderInputCollection;
 class UPlayerVault;
+class AGenericBuilderGameModeBase;
+struct FBuildingAssetInfo;
 
 UCLASS()
 class GENERICBUILDER_API ABuilderPlayerPawn : public APawn
@@ -26,6 +28,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Add zoom clamped to the min and max (this is spring arm length)
 	void AddZoom(const float DeltaZoom);
@@ -48,8 +52,6 @@ protected:
 	// Confirm building, removal, etc
 	void Escape(const FInputActionValue& Value);
 
-	// Initializes the Vault Object
-	void InitializePlayerVault();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -59,10 +61,12 @@ public:
 
 	// Call this from UI to check and set building controller
 	UFUNCTION(BlueprintCallable)
-	void CallBuildMode(UClass* BuildingClass);
+	void CallBuildMode(const FBuildingAssetInfo& SelectedBuilding);
 
 	UPROPERTY(EditAnywhere, Category = "Player Input")
 	TSubclassOf<UBuilderInputCollection> InputCollectionClass;
+
+	const UPlayerVault* GetVaultComponent();
 
 private:
 
@@ -78,7 +82,7 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UBuilderComponent* BuilderComponent;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vault Settings", meta = (AllowPrivateAccess = "true"))
 	UPlayerVault* VaultComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))

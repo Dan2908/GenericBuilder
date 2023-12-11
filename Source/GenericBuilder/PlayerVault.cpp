@@ -13,7 +13,6 @@ UPlayerVault::UPlayerVault()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 
@@ -24,6 +23,12 @@ void UPlayerVault::BeginPlay()
 
 }
 
+const bool UPlayerVault::PreviewCost(const TArray<FResourceRep>& Cost, TArray<FResourceRep>& Remaining) const
+{
+	return Resources.PreviewCost(Cost, Remaining);
+
+}
+
 
 // Called every frame
 void UPlayerVault::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -31,10 +36,5 @@ void UPlayerVault::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-}
-
-inline void UPlayerVault::InitializeVault(const UResourceCollection& ResourceCollection)
-{
-	// ResourceCollection.FillDefaultResourceData(Resources);
 }
 

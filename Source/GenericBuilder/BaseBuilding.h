@@ -56,7 +56,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	// Sets the building appearance, this is used to create the "placing" aspect
+	// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
 	void SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo);
 	// Get Buildiung extents
 	inline const FVector2D& GetXYExtents() { return Extents; }
@@ -71,5 +71,6 @@ private:
 
 	// Material Instance Dynamic
 	TArray<class UMaterialInstanceDynamic*> MIDs;
-
+	// Generate Material Instance Dynamics from existing materials
+	void GenerateMIDs();
 };

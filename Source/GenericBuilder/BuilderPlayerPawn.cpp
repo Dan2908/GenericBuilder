@@ -15,6 +15,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Helpers/BuilderInputCollection.h"
 #include "PlayerVault.h"
+#include "GenericBuilderGameModeBase.h"
 
 
 // Sets default values
@@ -35,6 +36,7 @@ ABuilderPlayerPawn::ABuilderPlayerPawn()
 	BuilderComponent = CreateDefaultSubobject<UBuilderComponent>(FName("Building Component"));
 
 	VaultComponent = CreateDefaultSubobject<UPlayerVault>(FName("Vault Component"));
+
 }
 // ---------------------------------------------------------------
 
@@ -72,17 +74,19 @@ void ABuilderPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 // ---------------------------------------------------------------
 
 // Call this from UI to check and set building controller
-void ABuilderPlayerPawn::CallBuildMode(UClass* BuildingClass)
+void ABuilderPlayerPawn::CallBuildMode(const FBuildingAssetInfo& SelectedBuilding)
 {
-	if (ABaseBuilding* NewBuilding = Cast<ABaseBuilding>(GetWorld()->SpawnActor(BuildingClass)))
+	if (BuilderComponent->StartPreview(SelectedBuilding))
 	{
-		// Make sure the new building is being held
-		if (BuilderComponent->HoldBuilding(NewBuilding))
-		{
-			MyController->SetBuildMode();
-		}
+		MyController->SetBuildMode();
 	}
 
+}
+// ---------------------------------------------------------------
+
+const UPlayerVault* ABuilderPlayerPawn::GetVaultComponent()
+{
+	return VaultComponent;
 }
 // ---------------------------------------------------------------
 
@@ -113,10 +117,15 @@ void ABuilderPlayerPawn::BeginPlay()
 
 	MyController = CastChecked<ABuilderPlayerController>(Controller);
 
-	InitializePlayerVault();
-
 	AddZoom(0);
 
+}
+
+void ABuilderPlayerPawn::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	//PropertyChangedEvent.GetPropertyName() == 
 }
 
 // Move the pawn always snapped to the landscape
@@ -178,9 +187,7 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 		if (BuilderComponent->ConfirmBuilding())
 		{
 			// Leave Building reference
-			ABaseBuilding* BuildingRef = BuilderComponent->LeaveBuilding();
-			// Call build mode again with a copy of the building.
-			CallBuildMode(BuildingRef->GetClass());
+			BuilderComponent->RestartPreview();
 		}
 	}
 
@@ -191,7 +198,7 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 void ABuilderPlayerPawn::Escape(const FInputActionValue& Value)
 {
 	// Call Component to leave the building
-	if (ABaseBuilding* Discarded = BuilderComponent->LeaveBuilding())
+	if (ABaseBuilding* Discarded = BuilderComponent->StopPreview())
 	{
 		// Destroy discarded building
 		GetWorld()->DestroyActor(Discarded);
@@ -200,28 +207,6 @@ void ABuilderPlayerPawn::Escape(const FInputActionValue& Value)
 	// Set default control mode
 	MyController->SetDefaultMode();
 
-}
-// ---------------------------------------------------------------
-
-// Initializes the Vault Object
-void ABuilderPlayerPawn::InitializePlayerVault()
-{
-	// initialize Vault
-	if (AGenericBuilderGameModeBase* GM = Cast<AGenericBuilderGameModeBase>(GetWorldSettings()->DefaultGameMode.GetDefaultObject()))
-	{
-		if (UResourceCollection* RC = GM->GetDefaultResourceCollection())
-		{
-			VaultComponent->InitializeVault(*RC);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s - Can't get resourse collection for the current GameMode"), *GetName());
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s - Can't get a proper Generic Builder Game Mode"), *GetName());
-	}
 }
 // ---------------------------------------------------------------
 

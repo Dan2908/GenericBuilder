@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Definitions/AssetCollection.h"
 #include "Game/BuildingAssetInfo.h"
 
 #include "BuildingCollection.generated.h"
@@ -38,10 +37,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collection", meta = (AllowPrivateAccess = "true"))
 	TArray<FBuildingAssetInfo> Buildings;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<UResourceCollection> ResourceCollection;
-	// Fills the cost array for the building specified. With error print in case it fails.
-	void InitializeCostArray(const int Index);
 	// Initializes all the building IDs, corresponding to its index in the array
 	void InitializeIDs();
 

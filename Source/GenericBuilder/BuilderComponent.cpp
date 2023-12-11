@@ -13,14 +13,16 @@
 #include "Helpers/Tracer.h"
 #include <set>
 #include "Styling/SlateBrush.h"
-
+#include "PlayerVault.h"
+#include "Game/BuildingAssetInfo.h"
 
 // Sets default values for this component's properties
 UBuilderComponent::UBuilderComponent()
 	: GridUnitSize(0)
 	, StepSize(0)
-	, HeldBuilding(nullptr)
-	, PlacementBox()
+	, PreviewBuilding(nullptr)
+	, PreviewRemainingResources(new FResourceVault())
+
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -52,43 +54,52 @@ void UBuilderComponent::AdjustPreviewLocation(FVector CloseLocation)
 {
 	GetRoundedLocation(CloseLocation);
 
-	HeldBuilding->SetActorLocation(CloseLocation);
+	PreviewBuilding->SetActorLocation(CloseLocation);
 
 }
 // ---------------------------------------------------------------
 
-// Holds a new building to handle its positioning.
-// Note: The object must be created outside.
-const bool UBuilderComponent::HoldBuilding(ABaseBuilding* Building)
+// Setup the preview for the given Building info. Return true if the preview was succesfully started, false otherwise.
+const bool UBuilderComponent::StartPreview(const FBuildingAssetInfo& SelectedBuilding)
 {
-	HeldBuilding = Building;
-
-	if (HeldBuilding)
+	// Create Preview
+	if (ABaseBuilding* Preview = Cast<ABaseBuilding>(GetWorld()->SpawnActor(SelectedBuilding.BaseBuilding.Get())))
 	{
-		// Get Extents
-		FVector Extents(HeldBuilding->GetXYExtents() * GridUnitSize, 2);
-		PlacementBox = FBox::BuildAABB(FVector::ZeroVector, Extents);
-		
+		PreviewBuildingInfo = &SelectedBuilding;
+		PreviewBuilding = Preview;
+
 		return true;
 	}
+
+	UE_LOG(LogTemp, Error, TEXT("UBuilderComponent::StartPreview - Unable to start preview with the selected building."));
 
 	return false;
 }
 // ---------------------------------------------------------------
 
-// Leave the current held building. (Just deletes the reference, not the building itself).
+
+// Restart preview with a new preview.
+void UBuilderComponent::RestartPreview()
+{
+	StartPreview(*PreviewBuildingInfo);
+
+}
+// ---------------------------------------------------------------
+
+// Stops the current preview.
 // Returns the left building pointer if any.
-ABaseBuilding* UBuilderComponent::LeaveBuilding()
+ABaseBuilding* UBuilderComponent::StopPreview()
 {
 	// Edge: No building to leave
-	if (!IsHoldingBuilding())
+	if (!IsPreviewing())
 	{
 		return nullptr;
 	}
 
-	ABaseBuilding* Output = HeldBuilding;
+	ABaseBuilding* Output = PreviewBuilding;
 
-	HeldBuilding = nullptr;
+	PreviewBuildingInfo = nullptr;
+	PreviewBuilding = nullptr;
 
 	return Output;
 	
@@ -98,20 +109,27 @@ ABaseBuilding* UBuilderComponent::LeaveBuilding()
 // Make the checkings and returns if the building can be built in the pointed world location.
 const bool UBuilderComponent::GetCanBuildHere()
 {
-	check(IsHoldingBuilding());
+	check(IsPreviewing());
 
 	// Get Building scaled Extents
-	const FVector Extents = PlacementBox.GetExtent();
+	const FVector2D& Extents = PreviewBuilding->GetXYExtents() * GridUnitSize;
 
-	Tracer BuildTracer(GetWorld(), HeldBuilding->GetActorTransform(), Extents.X, Extents.Y);
+	Tracer BuildTracer(GetWorld(), PreviewBuilding->GetActorTransform(), Extents.X, Extents.Y);
 
 	// TODO: Do this elsewhere
 	// Correct preview z position
-	const FVector PreviewLocation = HeldBuilding->GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
-	HeldBuilding->SetActorLocation(PreviewLocation);
+	const FVector PreviewLocation = PreviewBuilding->GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
+	PreviewBuilding->SetActorLocation(PreviewLocation);
 
 	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
 	const bool IsObstructed = IsPlaceObstructed();
+	const bool IsCostOk = UpdatePreviewResources();
+
+	if (!IsCostOk)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not enougth resources."));
+		return false;
+	}
 
 	if (!IsLandOk)
 	{
@@ -129,6 +147,12 @@ const bool UBuilderComponent::GetCanBuildHere()
 }
 // ---------------------------------------------------------------
 
+inline ABuilderPlayerPawn* UBuilderComponent::GetOwningPlayer() 
+{ 
+	return Cast<ABuilderPlayerPawn>(GetOwner()); 
+}
+// ---------------------------------------------------------------
+
 // Get Location adjusted to map grid.
 inline void UBuilderComponent::GetRoundedLocation(FVector& WorldLocation)
 {
@@ -141,17 +165,18 @@ inline void UBuilderComponent::GetRoundedLocation(FVector& WorldLocation)
 // Sets the building aspect according to the correct placing in the world
 void UBuilderComponent::SetBuildingAspect(const bool PlaceOK)
 {
-	HeldBuilding->SetMaterialAspect(PlaceOK ? GoodLocationAppearance : BadLocationAppearance);
+	PreviewBuilding->SetMaterialAspect(PlaceOK ? GoodLocationAppearance : BadLocationAppearance);
 }
+// ---------------------------------------------------------------
 
 // Call this to rotate the building (Yaw) if there is one currently being held.
 void UBuilderComponent::RotateBuilding(const float DeltaYaw)
 {
-	if (HeldBuilding)
+	if (PreviewBuilding)
 	{
 		FRotator Rot(0, DeltaYaw, 0);
-		HeldBuilding->AddActorLocalRotation(Rot);
-		UE_LOG(LogTemp, Display, TEXT("Building %s Rotated %s"), *HeldBuilding->GetName(), *Rot.ToString())
+		PreviewBuilding->AddActorLocalRotation(Rot);
+		UE_LOG(LogTemp, Display, TEXT("Building %s Rotated %s"), *PreviewBuilding->GetName(), *Rot.ToString())
 	}
 }
 // ---------------------------------------------------------------
@@ -160,16 +185,26 @@ void UBuilderComponent::RotateBuilding(const float DeltaYaw)
 // Note: This function does not check placement, check GetCanBuildHere() before call this.
 const bool UBuilderComponent::ConfirmBuilding()
 {
-	if (!IsHoldingBuilding())
+	if (!IsPreviewing())
 	{
 		return false;
 	}
 
-	HeldBuilding->SetMaterialAspect(DefaultAppearance);
+	PreviewBuilding->SetMaterialAspect(DefaultAppearance);
 	// Set info and actually build in the world
-	CurrentGameMode->NewBuilding(HeldBuilding);
+	CurrentGameMode->NewBuilding(PreviewBuilding);
 
 	return true;
+
+}
+
+
+const bool UBuilderComponent::UpdatePreviewResources()
+{
+	const UPlayerVault* PlayerVault = GetOwningPlayer()->GetVaultComponent();
+	check(PlayerVault);
+
+	return PlayerVault->PreviewCost(PreviewBuildingInfo->ConstructionCost.Resources, PreviewRemainingResources->Resources);
 
 }
 // ---------------------------------------------------------------
@@ -178,7 +213,7 @@ const bool UBuilderComponent::ConfirmBuilding()
 inline const bool UBuilderComponent::IsPlaceObstructed() const
 {
 	TSet<AActor*> Result;
-	HeldBuilding->GetOverlappingActors(Result);
+	PreviewBuilding->GetOverlappingActors(Result);
 
 	return Result.Num() > 0;
 }
@@ -187,6 +222,6 @@ inline const bool UBuilderComponent::IsPlaceObstructed() const
 // Set Building aspect to indicate if the placement is ok
 void UBuilderComponent::SetPlacementAspect(const bool IsPlacing, const bool IsGoodLocation)
 {
-	HeldBuilding->SetMaterialAspect(!IsPlacing ? DefaultAppearance : (IsGoodLocation ? GoodLocationAppearance : BadLocationAppearance));
+	PreviewBuilding->SetMaterialAspect(!IsPlacing ? DefaultAppearance : (IsGoodLocation ? GoodLocationAppearance : BadLocationAppearance));
 }
 // ---------------------------------------------------------------

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Definitions/GameAssetInfo.h"
 #include "ResourceAssetInfo.h"
+#include "ResourceCollection.h"
 
 #include "BuildingAssetInfo.generated.h"
 
@@ -13,7 +14,7 @@ class UResourceCollection;
 
 // Type of building
 UENUM(BlueprintType)
-enum EBuildingTypes
+enum EGB_BuildingTypes
 {
 	Residential,
 	Production,
@@ -28,17 +29,14 @@ struct FBuildingAssetInfo : public FGameAssetInfo
 {
 	GENERATED_BODY()
 
+
 	// Building type
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	TEnumAsByte<EBuildingTypes> Type;
+	TEnumAsByte<EGB_BuildingTypes> Type;
 	// ABaseBuilding associated with this building.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
 	TSubclassOf<ABaseBuilding> BaseBuilding;
 	// An array of value pairs (Resource Name/Value)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	TArray<FResourceRep> ConstructionCost;
-
-	// Initializes the construction cost array according to the given game resources collection.
-	void InitializeConstructionCost(TSubclassOf<UResourceCollection> ResourceCollection);
-
+	FResourceVault ConstructionCost;
 };

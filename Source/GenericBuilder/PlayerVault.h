@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Game/ResourceCollection.h"
+
 #include "PlayerVault.generated.h"
 
 class UResourceCollection;
 struct FResourceRep;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS()
 class GENERICBUILDER_API UPlayerVault : public UActorComponent
 {
 	GENERATED_BODY()
@@ -17,6 +19,9 @@ class GENERICBUILDER_API UPlayerVault : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UPlayerVault();
+
+	// Wrapper function to call this vault's PreviewCost(), returning true if there are enough
+	const bool PreviewCost(const TArray<FResourceRep>& Cost, TArray<FResourceRep>& Remaining) const;
 
 protected:
 	// Called when the game starts
@@ -26,8 +31,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FResourceRep> Resources;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Resources")
+	FResourceVault Resources;
 
-	inline void InitializeVault(const UResourceCollection& ResourceCollection);
 };

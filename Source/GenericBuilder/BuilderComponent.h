@@ -10,6 +10,9 @@
 
 #include "BuilderComponent.generated.h"
 
+struct FResourceVault;
+struct FBuildingAssetInfo;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GENERICBUILDER_API UBuilderComponent : public UActorComponent
 {
@@ -34,15 +37,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AdjustPreviewLocation(FVector CloseLocation);
 
-	// Holds a new building to handle its positioning.
-	// Note: The object must be created outside.
+	// Setup the preview for the given Building info. Return true if the preview was succesful.
 	UFUNCTION(BlueprintCallable)
-	const bool HoldBuilding(ABaseBuilding* Building);
+	const bool StartPreview(const FBuildingAssetInfo& SelectedBuilding);
 
-	// Leave the current held building. (Just deletes the reference, not the building itself).
+	// Restart preview with a new preview building.
+	UFUNCTION(BlueprintCallable)
+	void RestartPreview();
+
+	// Stops the current preview.
 	// Returns the left building pointer if any.
 	UFUNCTION(BlueprintCallable)
-	ABaseBuilding* LeaveBuilding();
+	ABaseBuilding* StopPreview();
 
 	// Make the checkings and returns if the building can be built in the pointed world location.
 	UFUNCTION(BlueprintCallable)
@@ -59,24 +65,27 @@ public:
 	// Note: This function does not check placement, check GetCanBuildHere() before call this.
 	const bool ConfirmBuilding();
 
+	// Updates
+	const bool UpdatePreviewResources();
+
 	// Returns true if any other building or obstacle is overlapping the desired building location.
 	inline const bool IsPlaceObstructed() const;
 
-	// Returns true if there are a held building.
-	inline const bool IsHoldingBuilding() const { return HeldBuilding != nullptr; }
-
+	// Checks whether the component is currently previewing.
+	inline const bool IsPreviewing() const { return PreviewBuilding != nullptr; }
 
 private:
 
-	ABaseBuilding* HeldBuilding;
+	const FBuildingAssetInfo* PreviewBuildingInfo;
+	// Preview Building
+	ABaseBuilding* PreviewBuilding;
+	// Resource Vault preview of what are the resources after appliyng the building cost.
+	FResourceVault* PreviewRemainingResources;
 
 	AGenericBuilderGameModeBase* CurrentGameMode;
 
 	float GridUnitSize;
 	float StepSize;
-
-	// Auxiliar box helper to calculate in world placement
-	FBox PlacementBox;
 
 	// Aspect when is the placement is OK
 	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
@@ -93,6 +102,8 @@ private:
 	float MaxCornerDifference = 200.0f;
 
 	inline AGenericBuilderGameModeBase* GetGameMode() { return Cast<AGenericBuilderGameModeBase>(GetWorld()->GetAuthGameMode()); }
+
+	inline ABuilderPlayerPawn* GetOwningPlayer();
 
 	// Get Location adjusted to map grid.
 	inline void GetRoundedLocation(FVector& WorldLocation);

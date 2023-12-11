@@ -28,7 +28,7 @@ void ABaseBuilding::Tick(float DeltaTime)
 }
 // ---------------------------------------------------------------
 
-// Sets the building appearance, this is used to create 
+// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
 void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
 {
 	for (UMaterialInstanceDynamic* MID : MIDs)
@@ -39,16 +39,23 @@ void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
 }
 // ---------------------------------------------------------------
 
-// Called when the game starts or when spawned
-void ABaseBuilding::BeginPlay()
+// Generate Material Instance Dynamics from existing materials
+void ABaseBuilding::GenerateMIDs()
 {
-	Super::BeginPlay();
-	
 	const int MaterialCount = Mesh->GetNumMaterials();
 	for (int i = 0; i < MaterialCount; ++i)
 	{
 		MIDs.Push(Mesh->CreateAndSetMaterialInstanceDynamic(i));
 	}
+}
+// ---------------------------------------------------------------
+
+// Called when the game starts or when spawned
+void ABaseBuilding::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	GenerateMIDs();
 
 }
 // ---------------------------------------------------------------

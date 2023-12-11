@@ -26,7 +26,6 @@ void UBuildingCollection::PostEditChangeProperty(FPropertyChangedEvent& Property
 		const int Index = Buildings.Num() - 1;
 		check(Buildings.IsValidIndex(Index));
 
-		InitializeCostArray(Index);
 		InitializeIDs();
 	}
 
@@ -37,24 +36,6 @@ void UBuildingCollection::PostEditChangeProperty(FPropertyChangedEvent& Property
 const TArray<FBuildingAssetInfo>& UBuildingCollection::GetBuildings() const
 {
 	return Buildings;
-}
-// ---------------------------------------------------------------
-
-// Fills the cost array for the building specified. With error print in case it fails.
-void UBuildingCollection::InitializeCostArray(const int Index)
-{
-	if (FBuildingAssetInfo* Building = &Buildings[Index])
-	{
-		if (UResourceCollection* Resources = ResourceCollection.GetDefaultObject())
-		{
-			Resources->FillDefaultResourceData(Building->ConstructionCost);
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UBuildingCollection::FillCostArray - No resource collection found!"));
-	}
-
 }
 // ---------------------------------------------------------------
 
