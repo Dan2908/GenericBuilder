@@ -5,7 +5,9 @@ This is meant to be a base template to create games that use these functionality
 
 ## Input Mapping
 - ASWD / Arrows: Move camera around.
-- Q, W: Zoom In, Zoom Out
+- Mouse Wheel: Zoom In, Zoom Out.
+- Q, W: Rotate camera.
+- ,(comma), .(Dot): Rotate preview building
 - Left Click: Select/Build
 - Right Click: Cancel
 
@@ -16,7 +18,8 @@ The assets and UI art are hand made by me, just as placeholders for further real
 - Aseprite
 
 ---
-### Currently working on...
-* Working on a building collection, providing flexibility to set the rules for different Game Modes.
-
-![image](https://github.com/Dan2908/GenericBuilder/assets/63173102/043134f0-8da6-4969-bbb1-15901d8ec712)
+### ScreenShots
+* Placing Buildings
+![image](https://github.com/Dan2908/GenericBuilder/assets/63173102/cee1b84d-0ca1-4a8d-a410-690f7a669334)
+* Configurable Building collection
+![image](https://github.com/Dan2908/GenericBuilder/assets/63173102/bc5227cd-df9a-4507-8bf5-92a10a6a8e7e)
