@@ -13,24 +13,6 @@ UBuildingCollection::UBuildingCollection()
 }
 // ---------------------------------------------------------------
 
-// Update const values when property has changed.
-void UBuildingCollection::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	const bool AddedArray = PropertyChangedEvent.ChangeType == EPropertyChangeType::ArrayAdd;
-
-	// if a new building is added in the editor, fill IDs and the cost array for it.
-	if (AddedArray)
-	{
-		const int Index = Buildings.Num() - 1;
-		check(Buildings.IsValidIndex(Index));
-
-		InitializeIDs();
-	}
-
-}
-// ---------------------------------------------------------------
 
 // Gets buildings collection reference
 const TArray<FBuildingAssetInfo>& UBuildingCollection::GetBuildings() const

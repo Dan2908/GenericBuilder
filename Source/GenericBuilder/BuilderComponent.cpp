@@ -11,10 +11,8 @@
 #include <Kismet/GameplayStatics.h>
 #include <Components/BoxComponent.h>
 #include "Helpers/Tracer.h"
-#include <set>
-#include "Styling/SlateBrush.h"
-#include "PlayerVault.h"
 #include "Game/BuildingAssetInfo.h"
+#include "BuilderPlayerState.h"
 
 // Sets default values for this component's properties
 UBuilderComponent::UBuilderComponent()
@@ -107,7 +105,7 @@ ABaseBuilding* UBuilderComponent::StopPreview()
 // ---------------------------------------------------------------
 
 // Make the checkings and returns if the building can be built in the pointed world location.
-const bool UBuilderComponent::GetCanBuildHere()
+const bool UBuilderComponent::CanBuildHere()
 {
 	check(IsPreviewing());
 
@@ -123,7 +121,7 @@ const bool UBuilderComponent::GetCanBuildHere()
 
 	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
 	const bool IsObstructed = IsPlaceObstructed();
-	const bool IsCostOk = UpdatePreviewResources();
+	const bool IsCostOk = GetPlayerState()->PlayerResources.GetCanPay(PreviewBuildingInfo->ConstructionCost.Resources);
 
 	if (!IsCostOk)
 	{
@@ -153,6 +151,13 @@ inline ABuilderPlayerPawn* UBuilderComponent::GetOwningPlayer()
 }
 // ---------------------------------------------------------------
 
+
+inline ABuilderPlayerState* UBuilderComponent::GetPlayerState()
+{
+	return Cast<ABuilderPlayerState>(GetOwningPlayer()->GetPlayerState());
+}
+// ---------------------------------------------------------------
+
 // Get Location adjusted to map grid.
 inline void UBuilderComponent::GetRoundedLocation(FVector& WorldLocation)
 {
@@ -170,7 +175,7 @@ void UBuilderComponent::SetBuildingAspect(const bool PlaceOK)
 // ---------------------------------------------------------------
 
 // Call this to rotate the building (Yaw) if there is one currently being held.
-void UBuilderComponent::RotateBuilding(const float DeltaYaw)
+void UBuilderComponent::RotatePreview(const float DeltaYaw)
 {
 	if (PreviewBuilding)
 	{
@@ -182,7 +187,7 @@ void UBuilderComponent::RotateBuilding(const float DeltaYaw)
 // ---------------------------------------------------------------
 
 // Call this to actually place the building in the world.
-// Note: This function does not check placement, check GetCanBuildHere() before call this.
+// Note: This function does not check placement, check CanBuildHere() before call this.
 const bool UBuilderComponent::ConfirmBuilding()
 {
 	if (!IsPreviewing())
@@ -190,24 +195,22 @@ const bool UBuilderComponent::ConfirmBuilding()
 		return false;
 	}
 
+	// Set to regular material.
 	PreviewBuilding->SetMaterialAspect(DefaultAppearance);
-	// Set info and actually build in the world
-	CurrentGameMode->NewBuilding(PreviewBuilding);
+	
+	if (ABuilderPlayerState* PState = GetPlayerState())
+	{
+		PState->Pay(PreviewBuildingInfo->ConstructionCost.Resources);
+		PState->RegisterBuilding(PreviewBuilding, PreviewBuildingInfo->Type);
 
-	return true;
+		RestartPreview();
+		return true;
+	}
 
-}
-
-
-const bool UBuilderComponent::UpdatePreviewResources()
-{
-	const UPlayerVault* PlayerVault = GetOwningPlayer()->GetVaultComponent();
-	check(PlayerVault);
-
-	return PlayerVault->PreviewCost(PreviewBuildingInfo->ConstructionCost.Resources, PreviewRemainingResources->Resources);
+	return false;
 
 }
-// ---------------------------------------------------------------
+
 
 // Returns true if any other building or obstacle is overlapping the desired building location.
 inline const bool UBuilderComponent::IsPlaceObstructed() const

@@ -25,8 +25,6 @@ public:
 
 	// Constructor
 	UBuildingCollection();
-	// Update const values when property has changed.
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent);
 
 	// Gets buildings collection reference
 	UFUNCTION()

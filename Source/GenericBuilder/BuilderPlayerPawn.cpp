@@ -14,8 +14,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Helpers/BuilderInputCollection.h"
-#include "PlayerVault.h"
 #include "GenericBuilderGameModeBase.h"
+#include "BuilderPlayerState.h"
 
 
 // Sets default values
@@ -35,8 +35,6 @@ ABuilderPlayerPawn::ABuilderPlayerPawn()
 
 	BuilderComponent = CreateDefaultSubobject<UBuilderComponent>(FName("Building Component"));
 
-	VaultComponent = CreateDefaultSubobject<UPlayerVault>(FName("Vault Component"));
-
 }
 // ---------------------------------------------------------------
 
@@ -49,6 +47,9 @@ void ABuilderPlayerPawn::Tick(float DeltaTime)
 	{
 		HandleHeldBuilding();
 	}
+
+	// Update Production Task
+	BuilderPlayerState->UpdateProductionCount(DeltaTime);
 
 }
 // ---------------------------------------------------------------
@@ -80,15 +81,10 @@ void ABuilderPlayerPawn::CallBuildMode(const FBuildingAssetInfo& SelectedBuildin
 	{
 		MyController->SetBuildMode();
 	}
-
+	
 }
 // ---------------------------------------------------------------
 
-const UPlayerVault* ABuilderPlayerPawn::GetVaultComponent()
-{
-	return VaultComponent;
-}
-// ---------------------------------------------------------------
 
 // Do the logics to check and transform currently held building
 void ABuilderPlayerPawn::HandleHeldBuilding()
@@ -103,7 +99,7 @@ void ABuilderPlayerPawn::HandleHeldBuilding()
 	// Adjust the location to the grid.
 	BuilderComponent->AdjustPreviewLocation(Location);
 
-	const bool CanBuild = BuilderComponent->GetCanBuildHere();
+	const bool CanBuild = BuilderComponent->CanBuildHere();
 	
 	BuilderComponent->SetBuildingAspect(CanBuild);
 
@@ -118,6 +114,16 @@ void ABuilderPlayerPawn::BeginPlay()
 	MyController = CastChecked<ABuilderPlayerController>(Controller);
 
 	AddZoom(0);
+
+	BuilderPlayerState = CastChecked<ABuilderPlayerState>(GetPlayerState());
+	
+
+	//FTimerHandle ProductionHandle;
+	//FTimerDelegate ProductionDelegate;
+	//ProductionDelegate.BindUFunction(this, "UpdateProductionCount");
+	//GetWorld()->GetTimerManager().SetTimer(ProductionHandle, ProductionDelegate, );
+
+
 
 }
 
@@ -168,7 +174,7 @@ void ABuilderPlayerPawn::RotateHeldBuilding(const FInputActionValue& Value)
 {
 	const float Yaw = CalculateDeltaSpeed(Value.Get<float>(), HeldBuildingRotSpeed);
 
-	BuilderComponent->RotateBuilding(Yaw);
+	BuilderComponent->RotatePreview(Yaw);
 
 	UE_LOG(LogTemp, Display, TEXT("Rotation: %f"), Yaw);
 }
@@ -182,13 +188,9 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 		return;
 	}
 
-	if (BuilderComponent->GetCanBuildHere())
+	if (BuilderComponent->CanBuildHere())
 	{
-		if (BuilderComponent->ConfirmBuilding())
-		{
-			// Leave Building reference
-			BuilderComponent->RestartPreview();
-		}
+		BuilderComponent->ConfirmBuilding();
 	}
 
 }

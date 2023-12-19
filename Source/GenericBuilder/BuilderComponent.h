@@ -10,6 +10,7 @@
 
 #include "BuilderComponent.generated.h"
 
+class ABuilderPlayerState;
 struct FResourceVault;
 struct FBuildingAssetInfo;
 
@@ -52,21 +53,18 @@ public:
 
 	// Make the checkings and returns if the building can be built in the pointed world location.
 	UFUNCTION(BlueprintCallable)
-	const bool GetCanBuildHere();
+	const bool CanBuildHere();
 
 	// Sets the building aspect according to the correct placing in the world
 	UFUNCTION(BlueprintCallable)
 	void SetBuildingAspect(const bool PlaceOK);
 	
 	// Call this to rotate the building (Yaw) if there is one currently being held.
-	void RotateBuilding(const float DeltaYaw);
+	void RotatePreview(const float DeltaYaw);
 
 	// Call this to actually place the building in the world.
-	// Note: This function does not check placement, check GetCanBuildHere() before call this.
+	// Note: This function does not check placement, check CanBuildHere() before call this.
 	const bool ConfirmBuilding();
-
-	// Updates
-	const bool UpdatePreviewResources();
 
 	// Returns true if any other building or obstacle is overlapping the desired building location.
 	inline const bool IsPlaceObstructed() const;
@@ -104,6 +102,8 @@ private:
 	inline AGenericBuilderGameModeBase* GetGameMode() { return Cast<AGenericBuilderGameModeBase>(GetWorld()->GetAuthGameMode()); }
 
 	inline ABuilderPlayerPawn* GetOwningPlayer();
+
+	inline ABuilderPlayerState* GetPlayerState();
 
 	// Get Location adjusted to map grid.
 	inline void GetRoundedLocation(FVector& WorldLocation);

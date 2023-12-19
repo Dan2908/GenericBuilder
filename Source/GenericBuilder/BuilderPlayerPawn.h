@@ -10,6 +10,7 @@
 #include "BuilderPlayerPawn.generated.h"
 
 class ABuilderPlayerController;
+class ABuilderPlayerState;
 class ABaseBuilding;
 class UBuilderInputCollection;
 class UPlayerVault;
@@ -66,8 +67,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player Input")
 	TSubclassOf<UBuilderInputCollection> InputCollectionClass;
 
-	const UPlayerVault* GetVaultComponent();
-
 private:
 
 	UPROPERTY(VisibleAnywhere)
@@ -81,9 +80,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UBuilderComponent* BuilderComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Vault Settings", meta = (AllowPrivateAccess = "true"))
-	UPlayerVault* VaultComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float CameraSpeed = 800;
@@ -112,6 +108,8 @@ private:
 	// Get the movement scaled by World's Delta seconds.
 	template<typename T = float>
 	inline const T CalculateDeltaSpeed(const T Value, const float InSpeed);
+	// Pointer to our player state.
+	ABuilderPlayerState* BuilderPlayerState;
 };
 
 template<typename T>

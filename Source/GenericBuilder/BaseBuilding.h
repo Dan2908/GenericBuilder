@@ -61,14 +61,17 @@ public:
 	// Get Buildiung extents
 	inline const FVector2D& GetXYExtents() { return Extents; }
 
+	UPROPERTY(EditAnywhere, Category = "Building Adjustments")
+	bool bBuildingActive = true;
+
 private:
+
 	// Base mesh
 	UPROPERTY(VisibleAnywhere, Category = "Building Adjustments")
 	UStaticMeshComponent* Mesh;
-
-	UPROPERTY(EditAnywhere, Category = "Building Attributes")
+	// Building Extents
+	UPROPERTY(EditAnywhere, Category = "Building Adjustments")
 	FVector2D Extents;
-
 	// Material Instance Dynamic
 	TArray<class UMaterialInstanceDynamic*> MIDs;
 	// Generate Material Instance Dynamics from existing materials

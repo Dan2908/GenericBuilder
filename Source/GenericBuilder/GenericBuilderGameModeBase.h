@@ -11,11 +11,11 @@ class ABuilderPlayerPawn;
 class ABaseBuilding;
 class UBuildingCollection;
 class UResourceCollection;
+class ABuilderPlayerState;
 
 struct FBuildingAssetInfo;
 struct FResourceAssetInfo;
-struct FResourceRep;
-
+struct FResourceValue;
 
 /**
  * 
@@ -25,7 +25,7 @@ class GENERICBUILDER_API AGenericBuilderGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
-	typedef TArray<FResourceRep> FResourceData;
+	typedef TArray<FResourceValue> FResourceData;
 
 public:
 

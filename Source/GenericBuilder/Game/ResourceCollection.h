@@ -21,14 +21,23 @@ struct FResourceVault
 	GENERATED_BODY()
 	// Array of resources
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FResourceRep> Resources;
+	TArray<FResourceValue> Resources;
+	// Adds the Amount of ResourceType to this Vault.
+	inline void AddResource(const EGB_Resources ResourceType, const float Amount);
+	// Adds the given Resource to this Vault.
+	inline void AddResource(const FResourceValue& Resource);
 	// Constructor
 	FResourceVault();
 	// Initialize Vault with and according to static definitions.
 	inline void InitializeVault();
 	// Preview applying given a given cost. Returns true if the stored resources are enough.
 	// Remaining is filled with the result of applying the cost to this vault.
-	const bool PreviewCost(const TArray<FResourceRep>& Cost, TArray<FResourceRep>& Remaining) const;
+	const bool GetPreviewedPayment(const TArray<FResourceValue>& CostArray, TArray<FResourceValue>& Preview);
+	// Preview applying given a given cost. Returns true if the stored resources are enough.
+	const bool GetCanPay(const TArray<FResourceValue>& CostArray);
+
+	void SetResources(const TArray<FResourceValue>& NewValues);
+
 };
 
 // ---------------------------------------------------------------
@@ -47,11 +56,6 @@ public:
 	// Gets resource collection reference
 	UFUNCTION()
 	const TArray<FResourceAssetInfo>& GetResources() const;
-
-protected:
-
-	// Called when a property on this object has been modified externally
-	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 private:
 

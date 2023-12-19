@@ -15,16 +15,24 @@ const TArray<FResourceAssetInfo>& UResourceCollection::GetResources() const
 }
 // ---------------------------------------------------------------
 
-// Called when a property on this object has been modified externally
-void UResourceCollection::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+// ---------------------------------------------------------------
+//  FResourceVault
+// ---------------------------------------------------------------
+
+// Adds the Amount of ResourceType to this Vault.
+void FResourceVault::AddResource(const EGB_Resources ResourceType, const float Amount)
 {
-	Super::PostEditChangeProperty(PropertyChangedEvent);
+	Resources[TEnumAsByte<EGB_Resources>(ResourceType)].Value += Amount;
 
 }
 // ---------------------------------------------------------------
 
-// ---------------------------------------------------------------
-//  FResourceVault
+// Adds the given Resource to this Vault.
+inline void FResourceVault::AddResource(const FResourceValue& Resource)
+{
+	AddResource(Resource.ID, Resource.Value);
+
+}
 // ---------------------------------------------------------------
 
 // Constructor
@@ -37,43 +45,57 @@ FResourceVault::FResourceVault()
 // Initialize Vault with and according to static definitions.
 inline void FResourceVault::InitializeVault()
 {
-	if (Resources.Num() != EGB_Resources::Count)
-	{
-		Resources.Empty();
+	Resources.Empty();
 
-		for (int i = 0; i < EGB_Resources::Count; ++i)
-		{
-			// Push new resource
-			Resources.Push(FResourceRep(TEnumAsByte<EGB_Resources>(i)));
-		}
+	for (int i = 0; i < EGB_Resources::Count; ++i)
+	{
+		// Push new resource 		
+		Resources.Push(FResourceValue(TEnumAsByte<EGB_Resources>(i)));
 	}
+
 }
 // ---------------------------------------------------------------
 
 // Preview applying given a given cost. Returns true if the stored resources are enough.
 // Remaining is filled with the result of applying the cost to this vault.
-const bool FResourceVault::PreviewCost(const TArray<FResourceRep>& Cost, TArray<FResourceRep>& Remaining) const
+const bool FResourceVault::GetPreviewedPayment(const TArray<FResourceValue>& CostArray, TArray<FResourceValue>& Preview)
 {
-	const int ResourcesCount = Resources.Num();
-	// Make sure cost have the same element numbers
-	check(Cost.Num() == ResourcesCount);
-
-
 	bool Enough = true;
 
-	for (int i = 0; i < ResourcesCount; ++i)
+	Preview.Reserve(CostArray.Num());
+	for (const FResourceValue& Cost : CostArray)
 	{
-		const int ResultingValue = Resources[i].Value - Cost[i].Value;
-
-		if (ResultingValue < 0)
+		Preview.Push(FResourceValue(Cost.ID, Resources[Cost.ID].Value - Cost.Value));
+		if (Preview.Last().Value < 0)
 		{
 			Enough = false;
 		}
-
-		Remaining.Push(FResourceRep(Resources[i].ID, ResultingValue));
-
 	}
 
 	return Enough;
+}
+
+const bool FResourceVault::GetCanPay(const TArray<FResourceValue>& CostArray)
+{
+	for (const FResourceValue& Cost : CostArray)
+	{
+		const float Remaining = Resources[Cost.ID].Value - Cost.Value;
+		if (Remaining < 0)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+// ---------------------------------------------------------------
+
+// Sets the resources to the given NewValues
+void FResourceVault::SetResources(const TArray<FResourceValue>& NewValues)
+{
+	for (const FResourceValue& NewValue : NewValues)
+	{
+		Resources[NewValue.ID].Value = NewValue.Value;
+	}
 }
 // ---------------------------------------------------------------
