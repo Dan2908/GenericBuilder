@@ -4,6 +4,11 @@
 #include "ProductionBuilding.h"
 
 
+AProductionBuilding::AProductionBuilding()
+{
+	BaseBuildingType = TEnumAsByte<EGB_BuildingTypes>(EGB_BuildingTypes::Production);
+}
+
 // Gets the current output stock value.
 inline const FResourceValue& AProductionBuilding::GetOutputStock() const
 {

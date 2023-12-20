@@ -8,6 +8,7 @@
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
+
 // Sets default values
 ABaseBuilding::ABaseBuilding()
 {

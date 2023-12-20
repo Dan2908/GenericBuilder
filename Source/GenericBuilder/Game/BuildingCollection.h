@@ -35,7 +35,4 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collection", meta = (AllowPrivateAccess = "true"))
 	TArray<FBuildingAssetInfo> Buildings;
 
-	// Initializes all the building IDs, corresponding to its index in the array
-	void InitializeIDs();
-
 };

@@ -19,6 +19,8 @@ class GENERICBUILDER_API AProductionBuilding : public ABaseBuilding
 	
 public:
 
+	AProductionBuilding();
+
 	// Gets the current output stock value.
 	inline const FResourceValue& GetOutputStock() const;
 	// Gets the current input stock values array.
@@ -69,13 +71,6 @@ private:
 	// Max stock capacity of input resources.
 	UPROPERTY(EditAnywhere, Category = "Production Setup", meta = (AllowPrivateAccess = "true"))
 	int MaxInputStock = 2;
-
-	// Gets the Input index in the array for the given resource id.
-	// Returns -1 if the resourceID is not mapped in the input for this building.
-	//inline const int GetInputIndexByID(const EGB_Resources ResourceID) const;
-
-	// Gets the available stock space for the given array index.
-	//const int GetAvailableSpace(const int Index) const;
 
 	// Consume input for 1 unit of production if enough. Returns true if it was consumed successfully.
 	const bool ConsumeInput();

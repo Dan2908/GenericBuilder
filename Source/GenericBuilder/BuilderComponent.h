@@ -85,10 +85,10 @@ private:
 	float GridUnitSize;
 	float StepSize;
 
-	// Aspect when is the placement is OK
+	// Aspect when the placement is OK
 	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
 	FDynamicMaterialInfo GoodLocationAppearance = FDynamicMaterialInfo(FLinearColor::Green, 0.5f);
-	// Aspect when is the placement is not OK
+	// Aspect when the placement is not OK
 	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
 	FDynamicMaterialInfo BadLocationAppearance = FDynamicMaterialInfo(FLinearColor::Red, 0.5f);
 	// Default Aspect

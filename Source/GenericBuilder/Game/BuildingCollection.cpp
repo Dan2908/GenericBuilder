@@ -20,16 +20,3 @@ const TArray<FBuildingAssetInfo>& UBuildingCollection::GetBuildings() const
 	return Buildings;
 }
 // ---------------------------------------------------------------
-
-// Initializes all the building IDs, corresponding to its index in the array
-void UBuildingCollection::InitializeIDs()
-{
-	// Set IDs
-	int ID = 0;
-	for (FBuildingAssetInfo& Info : Buildings)
-	{
-		Info.ID = ID;
-		++ID;
-	}
-}
-// ---------------------------------------------------------------

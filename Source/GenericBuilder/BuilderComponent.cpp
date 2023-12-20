@@ -201,7 +201,7 @@ const bool UBuilderComponent::ConfirmBuilding()
 	if (ABuilderPlayerState* PState = GetPlayerState())
 	{
 		PState->Pay(PreviewBuildingInfo->ConstructionCost.Resources);
-		PState->RegisterBuilding(PreviewBuilding, PreviewBuildingInfo->Type);
+		PState->RegisterBuilding(PreviewBuilding, PreviewBuilding->BaseBuildingType);
 
 		RestartPreview();
 		return true;

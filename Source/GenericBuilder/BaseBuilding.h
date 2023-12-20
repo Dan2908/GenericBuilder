@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Game/BuildingAssetInfo.h"
 
 #include "BaseBuilding.generated.h"
 
@@ -54,6 +55,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	TEnumAsByte<EGB_BuildingTypes> BaseBuildingType;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
@@ -63,6 +66,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Building Adjustments")
 	bool bBuildingActive = true;
+
 
 private:
 

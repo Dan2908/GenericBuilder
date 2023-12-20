@@ -29,10 +29,6 @@ struct FBuildingAssetInfo : public FGameAssetInfo
 {
 	GENERATED_BODY()
 
-
-	// Building type
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
-	TEnumAsByte<EGB_BuildingTypes> Type;
 	// ABaseBuilding associated with this building.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
 	TSubclassOf<ABaseBuilding> BaseBuilding;
