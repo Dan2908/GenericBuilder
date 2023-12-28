@@ -121,7 +121,7 @@ const bool UBuilderComponent::CanBuildHere()
 
 	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
 	const bool IsObstructed = IsPlaceObstructed();
-	const bool IsCostOk = GetPlayerState()->PlayerResources.GetCanPay(PreviewBuildingInfo->ConstructionCost.Resources);
+	const bool IsCostOk = GetPlayerState()->PlayerResources.CanAfford(PreviewBuildingInfo->ConstructionCost.Resources);
 
 	if (!IsCostOk)
 	{
@@ -161,6 +161,7 @@ inline ABuilderPlayerState* UBuilderComponent::GetPlayerState()
 // Get Location adjusted to map grid.
 inline void UBuilderComponent::GetRoundedLocation(FVector& WorldLocation)
 {
+	// TODO: Replace with Tracer function
 	// Round XY values to the StepSize
 	WorldLocation.X = ceil(WorldLocation.X / StepSize) * StepSize;
 	WorldLocation.Y = ceil(WorldLocation.Y / StepSize) * StepSize;

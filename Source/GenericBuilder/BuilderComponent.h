@@ -13,6 +13,7 @@
 class ABuilderPlayerState;
 struct FResourceVault;
 struct FBuildingAssetInfo;
+class IBuildable;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GENERICBUILDER_API UBuilderComponent : public UActorComponent
@@ -72,6 +73,12 @@ public:
 	// Checks whether the component is currently previewing.
 	inline const bool IsPreviewing() const { return PreviewBuilding != nullptr; }
 
+	inline IBuildable* GetPreview()
+	{
+		return Preview;
+	}
+
+
 private:
 
 	const FBuildingAssetInfo* PreviewBuildingInfo;
@@ -82,18 +89,10 @@ private:
 
 	AGenericBuilderGameModeBase* CurrentGameMode;
 
+	IBuildable* Preview;
+
 	float GridUnitSize;
 	float StepSize;
-
-	// Aspect when the placement is OK
-	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
-	FDynamicMaterialInfo GoodLocationAppearance = FDynamicMaterialInfo(FLinearColor::Green, 0.5f);
-	// Aspect when the placement is not OK
-	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
-	FDynamicMaterialInfo BadLocationAppearance = FDynamicMaterialInfo(FLinearColor::Red, 0.5f);
-	// Default Aspect
-	UPROPERTY(VisibleAnywhere, Category = "Dynamic Material Presets")
-	FDynamicMaterialInfo DefaultAppearance = FDynamicMaterialInfo(FLinearColor::White, 1.0f);
 
 	// Max distance difference between corners to consider buildable terrain
 	UPROPERTY(EditAnywhere, Category = "Building Rules")

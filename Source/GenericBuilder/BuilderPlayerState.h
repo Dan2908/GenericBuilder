@@ -11,6 +11,7 @@
 struct FResourceVault;
 class ABaseBuilding;
 class AProductionBuilding;
+class ARoadSpline;
 
 /**
  * 
@@ -28,6 +29,9 @@ public:
 	// List of buildings constructed by this player.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Belongings")
 	TArray<ABaseBuilding*> PlayerBuildings;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Player Belongings")
+	TArray<ARoadSpline*> PlayerRoads;
 	// Checks if a payment can be done with the current PlayerResources. The OutCalculation is filled with the resources remaining.
 	// Returns true if all resources can be paid, false if at least 1 is not enough.
 	UFUNCTION()

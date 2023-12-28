@@ -43,6 +43,9 @@ void ABuilderPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	MyController->HandleBuilderMouse(BuilderComponent->GetPreview());
+
+	///--------------------
 	if(MyController->GetControlMode() == EControlMode::BuildMode)
 	{
 		HandleHeldBuilding();

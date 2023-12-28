@@ -75,7 +75,7 @@ const bool FResourceVault::GetPreviewedPayment(const TArray<FResourceValue>& Cos
 	return Enough;
 }
 
-const bool FResourceVault::GetCanPay(const TArray<FResourceValue>& CostArray)
+const bool FResourceVault::CanAfford(const TArray<FResourceValue>& CostArray) const
 {
 	for (const FResourceValue& Cost : CostArray)
 	{

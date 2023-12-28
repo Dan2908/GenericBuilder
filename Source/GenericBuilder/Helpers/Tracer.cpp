@@ -16,6 +16,7 @@ Tracer::Tracer(UWorld* World, const FTransform WorldTransform, const float Exten
 	: Tracer()
 {
 	SetupTracer(World, WorldTransform, ExtentX, ExtentY);
+
 }
 // ---------------------------------------------------------------
 
@@ -77,6 +78,12 @@ inline const float Tracer::GetLowestCorner()
 				 std::fmin(Corners[2].Z, Corners[3].Z)));
 }
 // ---------------------------------------------------------------
+
+inline const void Tracer::RoundLocation(FVector& Location, const float StepSize)
+{
+	Location.X = ceil(Location.X / StepSize) * StepSize;
+	Location.Y = ceil(Location.Y / StepSize) * StepSize;
+}
 
 // Trace a line from each corner, the result is stored over corners array.
 inline const bool Tracer::GetTracedCorner(const int Index, FHitResult& OutHit)

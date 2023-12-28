@@ -7,6 +7,8 @@
 #include "Game/BuildingCollection.h"
 #include "Engine/Texture2D.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Helpers/Tracer.h"
+#include "GenericBuilderGameModeBase.h"
 
 
 // Sets default values
@@ -29,25 +31,22 @@ void ABaseBuilding::Tick(float DeltaTime)
 }
 // ---------------------------------------------------------------
 
-// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
-void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
+// Get Construction Cost for this building from the current available buildings from the current collection.
+// Return null if can't be found.
+const FResourceVault* ABaseBuilding::GetConstructionCost()
 {
-	for (UMaterialInstanceDynamic* MID : MIDs)
-	{
-		MID->SetVectorParameterValue(FName("Tint"), MaterialInfo.Color);
-		MID->SetScalarParameterValue(FName("Opacity"), MaterialInfo.Opacity);
-	}
-}
-// ---------------------------------------------------------------
+	const TArray<FBuildingAssetInfo>& BuildingCollection = GetAvailableBuildings();
+	const int Count = BuildingCollection.Num();
 
-// Generate Material Instance Dynamics from existing materials
-void ABaseBuilding::GenerateMIDs()
-{
-	const int MaterialCount = Mesh->GetNumMaterials();
-	for (int i = 0; i < MaterialCount; ++i)
+	for (int i = 0; i < Count; ++i)
 	{
-		MIDs.Push(Mesh->CreateAndSetMaterialInstanceDynamic(i));
+		if (BuildingCollection[i].BaseBuilding->StaticClass == StaticClass)
+		{
+			return &(BuildingCollection[i].ConstructionCost);
+		}
 	}
+
+	return nullptr;
 }
 // ---------------------------------------------------------------
 
@@ -62,3 +61,94 @@ void ABaseBuilding::BeginPlay()
 // ---------------------------------------------------------------
 
 
+// ---------------------------------------------------------------
+// IBuildable Definitions
+// ---------------------------------------------------------------
+
+// Move this buildable over the land following the user cursor.
+const bool ABaseBuilding::HandleMouseMove(const FVector MouseLandLocation)
+{
+	FVector ProjectedCursor = Tracer::TraceGround(this, MouseLandLocation);
+	Tracer::RoundLocation(ProjectedCursor, GetBuilderGameMode()->GetStepSize());
+
+	// Get Building scaled Extents
+	const FVector2D& Extents = GetExtents() * GetBuilderGameMode()->GetGridUnitSize();
+
+	Tracer BuildTracer(GetWorld(), GetActorTransform(), Extents.X, Extents.Y);
+
+	// Correct preview z position
+	const FVector PreviewLocation = GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
+	SetActorLocation(PreviewLocation);
+
+	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
+
+	TSet<AActor*> Result;
+	GetOverlappingActors(Result);
+	const bool IsObstructed = Result.Num() > 0;
+
+	const bool IsCostOk = GetConstructionCost() != nullptr;
+	//GetPlayerState()->PlayerResources.CanAfford(PreviewBuildingInfo->ConstructionCost.Resources);
+
+	if (!IsCostOk)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not enougth resources."));
+		return false;
+	}
+
+
+	if (!IsLandOk)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't build here, bad land elevations."));
+		return false;
+	}
+
+	if (IsObstructed)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can't build here, building obstructed."));
+		return false;
+	}
+
+	return false;
+}
+// ---------------------------------------------------------------
+
+// Checks if this buildable can be afford by the player
+const bool ABaseBuilding::CanAfford(const FResourceVault& PlayerResources)
+{
+	if (const FResourceVault* CostVault = GetConstructionCost())
+	{
+		return PlayerResources.CanAfford(CostVault->Resources);
+	}
+
+	return false;
+}
+// ---------------------------------------------------------------
+
+// Checks if this buildable is obstructed in the current location
+const bool ABaseBuilding::IsObstructed()
+{
+	TSet<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors);
+
+	return OverlappingActors.Num() > 0;
+}
+// ---------------------------------------------------------------
+
+// Checks if the land under building is correct
+const bool ABaseBuilding::IsLandRight()
+{
+	Tracer BuildTracer(GetWorld(), GetActorTransform(), Extents.X, Extents.Y);
+
+	// Correct preview z position
+	const FVector PreviewLocation = GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
+	SetActorLocation(PreviewLocation);
+
+	const bool IsLandOk = BuildTracer.GetCornersDiff() < MaxCornerDifference;
+}
+// ---------------------------------------------------------------
+
+inline FVector2D ABaseBuilding::GetExtents() const
+{
+	return FVector2D();
+}
+// ---------------------------------------------------------------

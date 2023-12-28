@@ -5,6 +5,7 @@
 #include "BaseBuilding.h"
 #include "ProductionBuilding.h"
 #include "Tasks/Task.h"
+#include "RoadSpline.h"
 
 #include "Game/ResourceCollection.h"
 

@@ -34,7 +34,7 @@ struct FResourceVault
 	// Remaining is filled with the result of applying the cost to this vault.
 	const bool GetPreviewedPayment(const TArray<FResourceValue>& CostArray, TArray<FResourceValue>& Preview);
 	// Preview applying given a given cost. Returns true if the stored resources are enough.
-	const bool GetCanPay(const TArray<FResourceValue>& CostArray);
+	const bool CanAfford(const TArray<FResourceValue>& CostArray) const;
 
 	void SetResources(const TArray<FResourceValue>& NewValues);
 

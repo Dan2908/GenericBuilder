@@ -1,10 +1,11 @@
 // Author: Danilo Brandolin
 // 11/13/2023
 
+#include "BuilderComponent.h"
 
 #include "BuilderPlayerController.h"
+#include "Interface/Buildable.h"
 
-#include "BuilderComponent.h"
 
 // Gets The currento controllerMode
 inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
@@ -60,11 +61,41 @@ const bool ABuilderPlayerController::GetDidNotMove()
 }
 // ---------------------------------------------------------------
 
+
+inline void ABuilderPlayerController::HandleBuilderMouse(IBuildable* Preview)
+{
+	// Skip if not in build mode
+	if (Preview == nullptr || ControlMode == EControlMode::Default)
+	{
+		return;
+	}
+	// Skip if failed to get mouse location in land.
+	FVector MouseInLand;
+	if (!GetMouseLocationInLand(MouseInLand) )
+	{
+		return; 
+	}
+	
+	Preview->HandleMouseMove(MouseInLand);
+
+}
+// ---------------------------------------------------------------
+
 // Sets control to "Building Mode"
 void ABuilderPlayerController::SetBuildMode()
 {
 	// Set build mode
 	ControlMode = EControlMode::BuildMode;
+	// Hide cursor
+	SetShowMouseCursor(false);
+}
+// ---------------------------------------------------------------
+
+// Sets control to "Build Road Mode"
+void ABuilderPlayerController::SetBuildRoadMode()
+{
+	// Set build mode
+	ControlMode = EControlMode::BuildRoadMode;
 	// Hide cursor
 	SetShowMouseCursor(false);
 }

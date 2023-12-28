@@ -17,7 +17,7 @@ class ABaseBuilding;
 UENUM()
 enum EControlMode : uint8
 {
-	Default, BuildMode
+	Default, BuildMode, BuildRoadMode
 };
 
 UCLASS()
@@ -34,6 +34,9 @@ public:
 	// Sets control to "Building Mode"
 	UFUNCTION(BlueprintCallable)
 	void SetBuildMode();
+	// Sets control to "Build Road Mode"
+	UFUNCTION(BlueprintCallable)
+	void SetBuildRoadMode();
 	// Sets control to "Default Mode"
 	UFUNCTION(BlueprintCallable)
 	void SetDefaultMode();
@@ -45,6 +48,8 @@ public:
 	const bool IsInBuildingMode();
 	// Check if the mouse movement wasn't nearly zero
 	const bool GetDidNotMove();
+
+	void HandleBuilderMouse(IBuildable* Preview);
 
 private:
 
