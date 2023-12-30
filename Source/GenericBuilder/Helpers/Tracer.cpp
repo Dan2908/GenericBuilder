@@ -79,11 +79,53 @@ inline const float Tracer::GetLowestCorner()
 }
 // ---------------------------------------------------------------
 
-inline const void Tracer::RoundLocation(FVector& Location, const float StepSize)
+// Trace Line to ground given a point in the world. It takes the point and projects it
+// through the Z axis and hits "Landscape" channel.
+inline FVector Tracer::TraceGround(UObject* WorldObject, const FVector Location)
+{
+	const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
+
+	FHitResult Hit;
+	const bool Success =
+		WorldObject->GetWorld()->LineTraceSingleByChannel(
+			Hit,
+			Location + UpDistance,
+			Location - UpDistance,
+			ECollisionChannel::ECC_GameTraceChannel1
+		);
+
+	return Success ? Hit.Location : Location;
+}
+// ---------------------------------------------------------------
+
+
+// Get the highest location projected to the ground.
+inline const float Tracer::GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location)
+{
+	const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
+
+	FHitResult Hit;
+	WorldObject->GetWorld()->SweepSingleByChannel
+	(
+		Hit,
+		Location + UpDistance,
+		Location - UpDistance,
+		FRotator::ZeroRotator.Quaternion(),	// no rotation
+		ECollisionChannel::ECC_GameTraceChannel1,	// ground channel
+		FCollisionShape::MakeBox(PlacementBox.GetExtent()) // Make a box from PlacementBox (divide by 2 tp get half extents)
+	);
+
+	return Hit.Location.Z;
+}
+// ---------------------------------------------------------------
+
+// Fixes given Location rounding it to the given StepSize.
+inline const void Tracer::FixLocationToGrid(FVector& Location, const float StepSize)
 {
 	Location.X = ceil(Location.X / StepSize) * StepSize;
 	Location.Y = ceil(Location.Y / StepSize) * StepSize;
 }
+// ---------------------------------------------------------------
 
 // Trace a line from each corner, the result is stored over corners array.
 inline const bool Tracer::GetTracedCorner(const int Index, FHitResult& OutHit)

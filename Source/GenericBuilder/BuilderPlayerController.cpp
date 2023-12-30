@@ -1,11 +1,12 @@
 // Author: Danilo Brandolin
 // 11/13/2023
 
-#include "BuilderComponent.h"
-
 #include "BuilderPlayerController.h"
-#include "Interface/Buildable.h"
 
+#include "BuilderComponent.h"
+#include "Interface/Buildable.h"
+#include "Helpers/Tracer.h"
+#include "GenericBuilderGameModeBase.h"
 
 // Gets The currento controllerMode
 inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
@@ -25,13 +26,14 @@ void ABuilderPlayerController::SetDefaultMode()
 // ---------------------------------------------------------------
 
 // Get where in the world is the player mouse pointing at.
-const bool ABuilderPlayerController::GetMouseLocationInLand(FVector& Location) const
+const bool ABuilderPlayerController::GetGridedMouseLocation(FVector& Location, AGenericBuilderGameModeBase* GameMode) const
 {
-	FHitResult Hit;
 	FVector Direction;
-
 	DeprojectMousePositionToWorld(Location, Direction);
 
+	Tracer::FixLocationToGrid(Location, GameMode->GetStepSize());
+
+	FHitResult Hit;
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Location, Location + Direction * 3000, ECollisionChannel::ECC_GameTraceChannel1))
 	{
 		Location = Hit.Location;
@@ -40,6 +42,7 @@ const bool ABuilderPlayerController::GetMouseLocationInLand(FVector& Location) c
 	
 	return false;
 }
+// ---------------------------------------------------------------
 
 // Returns true if controller is in building mode. False otherwise.
 const bool ABuilderPlayerController::IsInBuildingMode()
@@ -58,26 +61,6 @@ const bool ABuilderPlayerController::GetDidNotMove()
 	UE_LOG(LogTemp, Display, TEXT("MouseDelta.X = %f"), MouseDelta.X);
 	UE_LOG(LogTemp, Display, TEXT("MouseDelta.Y = %f"), MouseDelta.Y);
 	return FMath::IsNearlyZero(MouseDelta.X) && FMath::IsNearlyZero(MouseDelta.Y);
-}
-// ---------------------------------------------------------------
-
-
-inline void ABuilderPlayerController::HandleBuilderMouse(IBuildable* Preview)
-{
-	// Skip if not in build mode
-	if (Preview == nullptr || ControlMode == EControlMode::Default)
-	{
-		return;
-	}
-	// Skip if failed to get mouse location in land.
-	FVector MouseInLand;
-	if (!GetMouseLocationInLand(MouseInLand) )
-	{
-		return; 
-	}
-	
-	Preview->HandleMouseMove(MouseInLand);
-
 }
 // ---------------------------------------------------------------
 

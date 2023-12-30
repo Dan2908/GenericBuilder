@@ -6,19 +6,16 @@
 #include "BuilderPlayerState.h"
 #include "GenericBuilderGameModeBase.h"
 
-const FPreviewMaterialSettings GoodLocationAppearance = FPreviewMaterialSettings(FLinearColor::Green, 0.5f);
-const FPreviewMaterialSettings BadLocationAppearance = FPreviewMaterialSettings(FLinearColor::Red, 0.5f);
-const FPreviewMaterialSettings DefaultAppearance = FPreviewMaterialSettings(FLinearColor::White, 1.0f);
 
 // Get the current available buildings from the current game mode collection
-const TArray<FBuildingAssetInfo>& IBuildable::GetAvailableBuildings()
+const TArray<FBuildingAssetInfo>* IBuildable::GetAvailableBuildings()
 {
 	if (AGenericBuilderGameModeBase* GM = FetchBuilderGM())
 	{
-		return GM->GetAvailableBuildings();
+		return &GM->GetAvailableBuildings();
 	}
 
-	return TArray<FBuildingAssetInfo>();
+	return nullptr;
 
 }
 // ---------------------------------------------------------------
@@ -64,8 +61,8 @@ inline void IBuildable::SetMaterialAspect(const FPreviewMaterialSettings Materia
 }
 // ---------------------------------------------------------------
 
-// Check if can be built and use DMIs to set preview aspect
-inline void IBuildable::CheckAndSetAspect(ABuilderPlayerState* PlayerState)
+// Return true if CanAfford, IsObstructed and IsLandRight evaluate to true. False if at least one is false.
+const bool IBuildable::CanBuild(ABuilderPlayerState* PlayerState)
 {
 	bool CanBuild = true;
 
@@ -75,20 +72,47 @@ inline void IBuildable::CheckAndSetAspect(ABuilderPlayerState* PlayerState)
 		CanBuild = false;
 	}
 
-	if (!IsObstructed())
+	if (IsObstructed())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Building obstructed!"));
 		CanBuild = false;
 	}
-	
+
 	if (!IsLandRight())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Bad location!"));
 		CanBuild = false;
 	}
 
+	return CanBuild;
+}
+// ---------------------------------------------------------------
+
+// Use DMIs to set preview aspect if can build or cannot build.
+inline void IBuildable::SetPreviewAspect(const bool CanBuild)
+{
 	SetMaterialAspect(CanBuild ? GoodLocationAppearance : BadLocationAppearance);
 
+}
+// ---------------------------------------------------------------
+
+// Back to normal material aspect, when is no longer a preview.
+inline void IBuildable::SetNormalAspect()
+{
+	SetMaterialAspect(DefaultAppearance);
+
+}
+// ---------------------------------------------------------------
+
+// Wrapper to get current game mode stepsize for location.
+inline const float IBuildable::GetStepSize()
+{
+	if (AGenericBuilderGameModeBase* GM = FetchBuilderGM())
+	{
+		return GM->GetStepSize();
+	}
+
+	return 0.0f;
 }
 // ---------------------------------------------------------------
 

@@ -9,9 +9,10 @@
 #include "RoadSpline.generated.h"
 
 class USplineComponent;
+struct FResourceVault;
 
 UCLASS()
-class GENERICBUILDER_API ARoadSpline : public AActor, public IBuildable
+class GENERICBUILDER_API ARoadSpline : public AActor //, public IBuildable
 {
 	GENERATED_BODY()
 	
@@ -27,9 +28,6 @@ protected:
 	USplineComponent* SplineComponent;
 
 public:	
-	// IBuildable
-	UFUNCTION(BlueprintCallable, Category = "Buildable Interface")
-	const bool HandleMouseMove(const FVector MouseLandLocation);
 
 	// Extend road one point forward 
 	UFUNCTION(BlueprintCallable)
@@ -43,22 +41,33 @@ public:
 	UFUNCTION()
 	void FixStartPoint();
 
-	UFUNCTION()
-	void Confirm() 
-	{}
 
 	UFUNCTION()
 	void Cancel()
 	{}
 
-protected:
-	// Gets the calculated extents for this buildable
-	UFUNCTION(BlueprintNativeEvent, Category = "Buildable Interface")
-	inline FVector2D GetExtents() const;
+	/*
+	// IBuildable
+		// 
+		// Move this buildable over the land following the user cursor.
+	virtual const bool HandleMouseMove(const FVector MouseLandLocation) override;
+	// Rotate this building by DeltaYaw.
+	virtual void RotateBuildable(const float DeltaYaw) override;
+	// Checks if this buildable can be afford by the player
+	virtual const bool CanAfford(const FResourceVault& PlayerResources) override;
+	// Checks if this buildable is obstructed in the current location
+	virtual const bool IsObstructed() override;
+	// Checks if the land under building is correct
+	virtual const bool IsLandRight() override;
+	// Confirm action to build.
+	virtual bool Confirm() override;
 	// Get Construction Cost for this building from the current available buildings from the current collection.
-	// Return null if can't be found.
-	UFUNCTION(BlueprintNativeEvent, Category = "Buildable Interface")
-	const FResourceVault* GetConstructionCost();
+	virtual const FResourceVault& GetConstructionCost() override;
+	// Gets the calculated extents for this buildable
+	virtual inline FVector2D GetExtents() const override;
+	*/
+
+protected:
 
 private:
 
@@ -71,7 +80,9 @@ private:
 	float TileExtent = 20.0f;
 
 	// Adjust spline point locations to the ground
-	void ProjectSplinePointsToGround();
+	void ProjectSplinePointsToGround()
+	{
+	}
 
 	bool bIsStartFixed = false;
 

@@ -54,13 +54,6 @@ inline FVector2D ABaseBuilding::GetExtents() const
 }
 // ---------------------------------------------------------------
 
-// Disables collision for this actor.
-void ABaseBuilding::DisableCollision()
-{
-	SetActorEnableCollision(false);
-}
-// ---------------------------------------------------------------
-
 // Called when the game starts or when spawned
 void ABaseBuilding::BeginPlay()
 {
@@ -110,7 +103,7 @@ const bool ABaseBuilding::IsObstructed()
 {
 	TSet<AActor*> OverlappingActors;
 	GetOverlappingActors(OverlappingActors);
-	
+
 	return OverlappingActors.Num() > 0;
 }
 // ---------------------------------------------------------------

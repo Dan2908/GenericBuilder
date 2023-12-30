@@ -150,10 +150,7 @@ const bool UBuilderComponent::ConfirmBuilding()
 
 		Preview->SetNormalAspect();
 
-		Preview->DisableCollision();
-
 		RestartPreview();
-
 		return true;
 	}
 

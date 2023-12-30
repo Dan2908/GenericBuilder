@@ -16,7 +16,7 @@ struct FGameAssetInfo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Data")
 	FString Name;
 	// Asset ID.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Data")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Basic Data")
 	int ID;
 	// Thumbnail Texture.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Basic Data")

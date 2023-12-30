@@ -6,20 +6,12 @@
 #include "Definitions/GameAssetInfo.h"
 #include "ResourceAssetInfo.h"
 #include "ResourceCollection.h"
+#include "Interface/Buildable.h"
 
 #include "BuildingAssetInfo.generated.h"
 
 class ABaseBuilding;
 class UResourceCollection;
-
-// Type of building
-UENUM(BlueprintType)
-enum EGB_BuildingTypes
-{
-	Residential,
-	Production,
-	Storage
-};
 
 /**
 * Basic Structure holding asset data for buildings.
@@ -31,7 +23,7 @@ struct FBuildingAssetInfo : public FGameAssetInfo
 
 	// ABaseBuilding associated with this building.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Attributes")
-	TSubclassOf<ABaseBuilding> BaseBuilding;
+	TSubclassOf<AActor> BaseBuilding;
 	// An array of value pairs (Resource Name/Value)
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Building Attributes")
 	FResourceVault ConstructionCost;

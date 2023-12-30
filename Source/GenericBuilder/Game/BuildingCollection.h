@@ -30,6 +30,13 @@ public:
 	UFUNCTION()
 	const TArray<FBuildingAssetInfo>& GetBuildings() const;
 
+	/**
+	 * Called when a property on this object has been modified externally
+	 *
+	 * @param PropertyThatChanged the property that was modified
+	 */
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collection", meta = (AllowPrivateAccess = "true"))

@@ -6,8 +6,9 @@
 #include "ProductionBuilding.h"
 #include "Tasks/Task.h"
 #include "RoadSpline.h"
-
 #include "Game/ResourceCollection.h"
+#include "Interface/Buildable.h"
+
 
 // Checks if a payment can be done with the current PlayerResources. The OutCalculation is filled with the resources remaining.
 // Returns true if all resources can be paid, false if at least 1 is not enough.
@@ -25,7 +26,7 @@ const bool ABuilderPlayerState::Pay(const TArray<FResourceValue>& CostArray)
 // ---------------------------------------------------------------
 
 // Register a buildingto  belong to this player
-void ABuilderPlayerState::RegisterBuilding(ABaseBuilding* NewBuilding, const EGB_BuildingTypes BuildingType)
+void ABuilderPlayerState::RegisterBuilding(IBuildable* NewBuilding, const EGB_BuildableType BuildingType)
 {
 	const bool BuildingAlreadyExists = PlayerBuildings.Find(NewBuilding) != INDEX_NONE;
 	if (BuildingAlreadyExists)
@@ -36,7 +37,7 @@ void ABuilderPlayerState::RegisterBuilding(ABaseBuilding* NewBuilding, const EGB
 	PlayerBuildings.Push(NewBuilding);
 	// Push as Production Building
 	AProductionBuilding* AsProductionBuilding = Cast<AProductionBuilding>(NewBuilding);
-	if (AsProductionBuilding && BuildingType == EGB_BuildingTypes::Production)
+	if (AsProductionBuilding && BuildingType == EGB_BuildableType::Production)
 	{
 		ProductionBuildings.Push(AsProductionBuilding);
 
@@ -46,7 +47,7 @@ void ABuilderPlayerState::RegisterBuilding(ABaseBuilding* NewBuilding, const EGB
 // ---------------------------------------------------------------
 
 // Unregister a building that belongs to this player. Returns false if OurBuilding is not found in this player's list.
-const bool ABuilderPlayerState::UnregisterBuilding(ABaseBuilding* OurBuilding)
+const bool ABuilderPlayerState::UnregisterBuilding(IBuildable* OurBuilding)
 {
 	int32 Index = PlayerBuildings.Find(OurBuilding);
 

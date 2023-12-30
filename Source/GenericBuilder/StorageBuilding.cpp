@@ -8,7 +8,7 @@
 
 AStorageBuilding::AStorageBuilding()
 {
-	BaseBuildingType = TEnumAsByte<EGB_BuildingTypes>(EGB_BuildingTypes::Storage);
+	BuildableType = TEnumAsByte<EGB_BuildableType>(EGB_BuildableType::Storage);
 	 
 }
 

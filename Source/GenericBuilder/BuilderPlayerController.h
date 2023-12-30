@@ -42,17 +42,16 @@ public:
 	void SetDefaultMode();
 	// Get where in the world is the player mouse pointing at.
 	UFUNCTION(BlueprintCallable)
-	const bool GetMouseLocationInLand(FVector& Location) const;
+	const bool GetGridedMouseLocation(FVector& Location, AGenericBuilderGameModeBase* GameMode) const;
 	// Returns true if controller is in building mode. False otherwise.
 	UFUNCTION(BlueprintCallable)
 	const bool IsInBuildingMode();
 	// Check if the mouse movement wasn't nearly zero
 	const bool GetDidNotMove();
 
-	void HandleBuilderMouse(IBuildable* Preview);
-
 private:
 
 	EControlMode ControlMode = EControlMode::Default;
+
 
 };

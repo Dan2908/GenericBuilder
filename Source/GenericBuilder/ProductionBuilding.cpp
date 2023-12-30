@@ -6,7 +6,7 @@
 
 AProductionBuilding::AProductionBuilding()
 {
-	BaseBuildingType = TEnumAsByte<EGB_BuildingTypes>(EGB_BuildingTypes::Production);
+	BuildableType = TEnumAsByte<EGB_BuildableType>(EGB_BuildableType::Production);
 }
 
 // Gets the current output stock value.

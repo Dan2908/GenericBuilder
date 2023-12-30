@@ -4,6 +4,7 @@
 #include "RoadSpline.h"
 #include "Helpers/Tracer.h"
 #include "GenericBuilderGameModeBase.h"
+#include "Game/ResourceCollection.h"
 
 #include "Components/SplineComponent.h"
 
@@ -27,25 +28,6 @@ void ARoadSpline::BeginPlay()
 }
 // ---------------------------------------------------------------
 
-const bool ARoadSpline::HandleMouseMove(const FVector MouseLandLocation)
-{
-
-	FVector ProjectedCursor = Tracer::TraceGround(this, MouseLandLocation);
-	Tracer::RoundLocation(ProjectedCursor, GetBuilderGameMode()->GetStepSize());
-
-	if (bIsStartFixed)
-	{
-		// Rotate according to relative position of MousePosition
-		// Extend points according to the relative location of MousePosition
-	}
-	else
-	{
-		SetActorLocation(ProjectedCursor);
-	}
-
-	return false;
-}
-// ---------------------------------------------------------------
 
 // Extend road one point forward 
 void ARoadSpline::ExtendRoad()
@@ -80,6 +62,38 @@ void ARoadSpline::FixStartPoint()
 }
 // ---------------------------------------------------------------
 
+
+/*
+const bool ARoadSpline::IsObstructed()
+{
+	return false;
+}
+
+const bool ARoadSpline::IsLandRight()
+{
+	return false;
+}
+
+inline bool ARoadSpline::Confirm()
+{
+	return false;
+}
+// ---------------------------------------------------------------
+
+// Get Construction Cost for this building from the current available buildings from the current collection.
+const FResourceVault& ARoadSpline::GetConstructionCost()
+{
+	return FResourceVault();
+}
+// ---------------------------------------------------------------
+
+// Gets the calculated extents for this buildable
+inline FVector2D ARoadSpline::GetExtents() const
+{
+	return FVector2D();
+}
+// ---------------------------------------------------------------
+
 // Adjust spline point locations to the ground
 void ARoadSpline::ProjectSplinePointsToGround()
 {
@@ -95,4 +109,31 @@ void ARoadSpline::ProjectSplinePointsToGround()
 // ---------------------------------------------------------------
 
 
+const bool ARoadSpline::HandleMouseMove(const FVector MouseLandLocation)
+{
+	FVector NewLocation = MouseLandLocation;
+	Tracer::FixLocationToGrid(NewLocation, GetStepSize());
+
+	if (bIsStartFixed)
+	{
+		// Rotate according to relative position of MousePosition
+		// Extend points according to the relative location of MousePosition
+	}
+	else
+	{
+		SetActorLocation(NewLocation);
+	}
+
+	return false;
+}
+// ---------------------------------------------------------------
+
+
+const bool ARoadSpline::CanAfford(const FResourceVault& PlayerResources)
+{
+	return false;
+}
+// ---------------------------------------------------------------
+
+*/
 

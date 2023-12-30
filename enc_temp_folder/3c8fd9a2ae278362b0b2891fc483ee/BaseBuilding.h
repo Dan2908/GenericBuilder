@@ -53,8 +53,6 @@ public:
 	virtual const FResourceVault* GetConstructionCost() override;
 	// Gets the calculated extents for this buildable
 	virtual inline FVector2D GetExtents() const override;
-	// Disables collision for this actor.
-	virtual void DisableCollision() override;
 
 private:
 

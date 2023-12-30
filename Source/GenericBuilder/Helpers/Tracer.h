@@ -34,42 +34,13 @@ public:
 
 	// Trace Line to ground given a point in the world. It takes the point and projects it
 	// through the Z axis and hits "Landscape" channel.
-	static inline FVector TraceGround(UObject* WorldObject, const FVector Location)
-	{
-		const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
-
-		FHitResult Hit;
-		const bool Success =
-			WorldObject->GetWorld()->LineTraceSingleByChannel(
-				Hit,
-				Location + UpDistance,
-				Location - UpDistance,
-				ECollisionChannel::ECC_GameTraceChannel1
-			);
-
-			return Success ? Hit.Location : Location;
-	}
+	static inline FVector TraceGround(UObject* WorldObject, const FVector Location);
 
 	// Get the highest location projected to the ground.
-	static inline const float GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location)
-	{
-		const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
-		
-		FHitResult Hit;
-		WorldObject->GetWorld()->SweepSingleByChannel
-		(
-			Hit,
-			Location + UpDistance,
-			Location - UpDistance,
-			FRotator::ZeroRotator.Quaternion(),	// no rotation
-			ECollisionChannel::ECC_GameTraceChannel1,	// ground channel
-			FCollisionShape::MakeBox(PlacementBox.GetExtent()) // Make a box from PlacementBox (divide by 2 tp get half extents)
-		);
+	static inline const float GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location);
 
-		return Hit.Location.Z;
-	}
-
-	static const void RoundLocation(FVector& Location, const float StepSize);
+	// Fixes given Location rounding it to the given StepSize.
+	static inline const void FixLocationToGrid(FVector& Location, const float StepSize);
 
 private:
 

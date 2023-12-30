@@ -102,9 +102,6 @@ private:
 
 	ABuilderPlayerController* MyController;
 
-	// Do the logics to check and transform currently held building
-	void HandleHeldBuilding();
-
 	// Get the movement scaled by World's Delta seconds.
 	template<typename T = float>
 	inline const T CalculateDeltaSpeed(const T Value, const float InSpeed);

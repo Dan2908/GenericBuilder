@@ -106,9 +106,6 @@ public:
 	{
 		return true;
 	}
-	// Disables collision for this actor.
-	virtual void DisableCollision()
-	{}
 
 	// TODO: Find a system to fetch the can't build reasons
 	// Return true if CanAfford, IsObstructed and IsLandRight evaluate to true. False if at least one is false.
