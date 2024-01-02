@@ -3,13 +3,8 @@
 
 #include "BaseBuilding.h"
 
-#include "Brushes/SlateImageBrush.h"
 #include "Game/BuildingCollection.h"
-#include "Engine/Texture2D.h"
-#include "Materials/MaterialInstanceDynamic.h"
 #include "Helpers/Tracer.h"
-#include "GenericBuilderGameModeBase.h"
-
 
 // Sets default values
 ABaseBuilding::ABaseBuilding()
@@ -31,36 +26,6 @@ void ABaseBuilding::Tick(float DeltaTime)
 }
 // ---------------------------------------------------------------
 
-// Get Construction Cost for this building from the current available buildings from the current collection.
-const FResourceVault* ABaseBuilding::GetConstructionCost()
-{
-	if (const TArray<FBuildingAssetInfo>* BuildingCollection = GetAvailableBuildings())
-	{
-		if(BuildingCollection->IsValidIndex(BuildableID))
-		{
-			return &(*BuildingCollection)[BuildableID].ConstructionCost;
-		}
-
-	}
-
-	return nullptr;
-}
-// ---------------------------------------------------------------
-
-// Gets the calculated extents for this buildable
-inline FVector2D ABaseBuilding::GetExtents() const
-{
-	return Extents;
-}
-// ---------------------------------------------------------------
-
-// Disables collision for this actor.
-void ABaseBuilding::DisableCollision()
-{
-	SetActorEnableCollision(false);
-}
-// ---------------------------------------------------------------
-
 // Called when the game starts or when spawned
 void ABaseBuilding::BeginPlay()
 {
@@ -76,15 +41,9 @@ void ABaseBuilding::BeginPlay()
 // ---------------------------------------------------------------
 
 // Move this buildable over the land following the user cursor.
-const bool ABaseBuilding::HandleMouseMove(const FVector MouseLandLocation)
+void ABaseBuilding::MoveBuildable(const FVector NewLocation)
 {
-	FVector NewLocation = MouseLandLocation;
-	// Fix location to 
-	Tracer::FixLocationToGrid(NewLocation, GetStepSize());
-
 	SetActorLocation(NewLocation);
-
-	return false;
 }
 // ---------------------------------------------------------------
 
@@ -124,5 +83,28 @@ const bool ABaseBuilding::IsLandRight()
 	const FVector PreviewLocation = GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
 
 	return BuildTracer.GetCornersDiff() < MaxCornerDifference;
+}
+// ---------------------------------------------------------------
+
+// Get Construction Cost for this building from the current available buildings from the current collection.
+const FResourceVault* ABaseBuilding::GetConstructionCost()
+{
+	if (const TArray<FBuildingAssetInfo>* BuildingCollection = GetAvailableBuildings())
+	{
+		if (BuildingCollection->IsValidIndex(BuildableID))
+		{
+			return &(*BuildingCollection)[BuildableID].ConstructionCost;
+		}
+
+	}
+
+	return nullptr;
+}
+// ---------------------------------------------------------------
+
+// Gets the calculated extents for this buildable
+inline FVector2D ABaseBuilding::GetExtents() const
+{
+	return Extents;
 }
 // ---------------------------------------------------------------

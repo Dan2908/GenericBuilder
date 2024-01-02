@@ -4,15 +4,16 @@
 
 #include "BuilderComponent.h"
 
-#include "BuilderPlayerController.h"
 #include "BaseBuilding.h"
+#include "BuilderPlayerController.h"
 #include "BuilderPlayerPawn.h"
-#include "GenericBuilderGameModeBase.h"
-#include <Kismet/GameplayStatics.h>
-#include <Components/BoxComponent.h>
-#include "Helpers/Tracer.h"
-#include "Game/BuildingAssetInfo.h"
 #include "BuilderPlayerState.h"
+#include "Components/BoxComponent.h"
+#include "Game/BuildingAssetInfo.h"
+#include "GenericBuilderGameModeBase.h"
+#include "Helpers/Tracer.h"
+#include "Kismet/GameplayStatics.h"
+
 
 // Sets default values for this component's properties
 UBuilderComponent::UBuilderComponent()
@@ -24,6 +25,7 @@ UBuilderComponent::UBuilderComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 }
+// ---------------------------------------------------------------
 
 // Called when the game starts
 void UBuilderComponent::BeginPlay()
@@ -44,17 +46,6 @@ void UBuilderComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 }
 // ---------------------------------------------------------------
 
-// Takes any location and relocate the held building to the closest grid step subdivision
-void UBuilderComponent::AdjustPreviewLocation(FVector CloseLocation)
-{
-	GetRoundedLocation(CloseLocation);
-
-	AActor* PreviewActor = CastChecked<AActor>(Preview);
-	PreviewActor->SetActorLocation(CloseLocation);
-
-}
-// ---------------------------------------------------------------
-
 // Setup the preview for the given Building info. Return true if the preview was succesfully started, false otherwise.
 const bool UBuilderComponent::StartPreview(TSubclassOf<AActor> BuildingClass, const int BuildingID)
 {
@@ -71,7 +62,6 @@ const bool UBuilderComponent::StartPreview(TSubclassOf<AActor> BuildingClass, co
 	return Preview != nullptr;
 }
 // ---------------------------------------------------------------
-
 
 // Restart preview with a new preview.
 void UBuilderComponent::RestartPreview()
@@ -101,26 +91,24 @@ void UBuilderComponent::StopPreview()
 }
 // ---------------------------------------------------------------
 
-inline ABuilderPlayerPawn* UBuilderComponent::GetOwningPlayer() 
+// Get Current Auth GameMode.
+inline AGenericBuilderGameModeBase* UBuilderComponent::GetGameMode() 
+{ 
+	return Cast<AGenericBuilderGameModeBase>(GetWorld()->GetAuthGameMode()); 
+}
+// ---------------------------------------------------------------
+
+// Get the owning player of this component.
+inline ABuilderPlayerPawn* UBuilderComponent::GetOwningPlayer()
 { 
 	return Cast<ABuilderPlayerPawn>(GetOwner()); 
 }
 // ---------------------------------------------------------------
 
-
+// Get the owning player's state.
 inline ABuilderPlayerState* UBuilderComponent::GetPlayerState()
 {
 	return Cast<ABuilderPlayerState>(GetOwningPlayer()->GetPlayerState());
-}
-// ---------------------------------------------------------------
-
-// Get Location adjusted to map grid.
-inline void UBuilderComponent::GetRoundedLocation(FVector& WorldLocation)
-{
-	// TODO: Replace with Tracer function
-	// Round XY values to the StepSize
-	WorldLocation.X = ceil(WorldLocation.X / StepSize) * StepSize;
-	WorldLocation.Y = ceil(WorldLocation.Y / StepSize) * StepSize;
 }
 // ---------------------------------------------------------------
 
@@ -150,8 +138,6 @@ const bool UBuilderComponent::ConfirmBuilding()
 
 		Preview->SetNormalAspect();
 
-		Preview->DisableCollision();
-
 		RestartPreview();
 
 		return true;
@@ -161,7 +147,21 @@ const bool UBuilderComponent::ConfirmBuilding()
 
 }
 // ---------------------------------------------------------------
-// 
+
+// Checks whether the component is currently previewing.
+inline const bool UBuilderComponent::IsPreviewing() const 
+{
+	return Preview != nullptr;
+}
+// ---------------------------------------------------------------
+
+// Gets the current preview IBuildable pointer.
+inline IBuildable* UBuilderComponent::GetPreview()
+{
+	return Preview;
+}
+// ---------------------------------------------------------------
+
 // Updates the building preview position and aspect if is currently previewing.
 void UBuilderComponent::HandlePreview(const ABuilderPlayerController& Controller)
 {
@@ -172,14 +172,14 @@ void UBuilderComponent::HandlePreview(const ABuilderPlayerController& Controller
 
 	FVector LocationInLand;
 
-	AGenericBuilderGameModeBase* GameMode = GetGameMode();
-	ABuilderPlayerState* PlayerState = GetPlayerState();
-
-	if (GameMode && Controller.GetGridedMouseLocation(LocationInLand, GameMode))
+	if (Controller.GetGridedMouseLocation(LocationInLand, StepSize))
 	{
-		const bool CanBuild = Preview->CanBuild(PlayerState);
+		const bool CanBuild = Preview->CanBuild(GetPlayerState());
+
+		Preview->MoveBuildable(LocationInLand);
+
 		Preview->SetPreviewAspect(CanBuild);
-		Preview->HandleMouseMove(LocationInLand);
+
 	}
 
 }

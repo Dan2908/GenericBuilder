@@ -28,7 +28,7 @@ inline const TArray<FResourceValue>& AProductionBuilding::GetInputStock() const
 inline const int AProductionBuilding::InsertInput(const FResourceValue Resource)
 {
 
-	FResourceValue* StockResource = InputStock.FindByKey(Resource.ID);
+	FResourceValue* StockResource = InputStock.FindByKey(Resource.ResourceID);
 
 	if (StockResource != nullptr)
 	{
@@ -108,7 +108,7 @@ const bool AProductionBuilding::ConsumeInput()
 	{
 		// Get consuming rate according to ProductivityRate
 		const float Consumed = InputPerUnit[i].Value * CalculateDeltaProduction();
-		NewValues.Push(FResourceValue(InputStock[i].ID, InputStock[i].Value - Consumed));
+		NewValues.Push(FResourceValue(InputStock[i].ResourceID, InputStock[i].Value - Consumed));
 		// If some value is not enough, discard all.
 		if (NewValues.Last().Value < 0)
 		{

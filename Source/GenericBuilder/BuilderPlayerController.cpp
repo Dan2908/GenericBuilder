@@ -4,9 +4,9 @@
 #include "BuilderPlayerController.h"
 
 #include "BuilderComponent.h"
-#include "Interface/Buildable.h"
-#include "Helpers/Tracer.h"
 #include "GenericBuilderGameModeBase.h"
+#include "Helpers/Tracer.h"
+#include "Interface/Buildable.h"
 
 // Gets The currento controllerMode
 inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
@@ -26,19 +26,20 @@ void ABuilderPlayerController::SetDefaultMode()
 // ---------------------------------------------------------------
 
 // Get where in the world is the player mouse pointing at.
-const bool ABuilderPlayerController::GetGridedMouseLocation(FVector& Location, AGenericBuilderGameModeBase* GameMode) const
+const bool ABuilderPlayerController::GetGridedMouseLocation(FVector& Location, const float StepSize) const
 {
 	FVector Direction;
 	DeprojectMousePositionToWorld(Location, Direction);
 
-	Tracer::FixLocationToGrid(Location, GameMode->GetStepSize());
 
 	FHitResult Hit;
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Location, Location + Direction * 3000, ECollisionChannel::ECC_GameTraceChannel1))
 	{
 		Location = Hit.Location;
+		Tracer::FixLocationToGrid(Location, StepSize);
 		return true;
 	}
+
 	
 	return false;
 }

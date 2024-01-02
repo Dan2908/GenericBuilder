@@ -3,16 +3,17 @@
 
 #pragma once
 
-#include "BaseBuilding.h"
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "GenericBuilderGameModeBase.h"
-#include "BuilderPlayerController.h"
+#include "CoreMinimal.h"
 #include "Interface/Buildable.h"
 
 #include "BuilderComponent.generated.h"
 
 class ABuilderPlayerState;
+class ABuilderPlayerController;
+class AGenericBuilderGameModeBase;
+class ABuilderPlayerPawn;
+
 struct FResourceVault;
 struct FBuildingAssetInfo;
 
@@ -33,10 +34,6 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Takes any location and relocate the held building to the closest grid step subdivision
-	UFUNCTION(BlueprintCallable)
-	void AdjustPreviewLocation(FVector CloseLocation);
-
 	// Setup the preview for the given Building info. Return true if the preview was succesful.
 	UFUNCTION(BlueprintCallable)
 	const bool StartPreview(TSubclassOf<AActor> BuildingClass, const int BuildingID);
@@ -46,7 +43,6 @@ public:
 	void RestartPreview();
 
 	// Stops the current preview.
-	// Returns the left building pointer if any.
 	UFUNCTION(BlueprintCallable)
 	void StopPreview();
 
@@ -57,12 +53,10 @@ public:
 	const bool ConfirmBuilding();
 
 	// Checks whether the component is currently previewing.
-	inline const bool IsPreviewing() const { return Preview != nullptr; }
+	inline const bool IsPreviewing() const;
 
-	inline IBuildable* GetPreview()
-	{
-		return Preview;
-	}
+	// Gets the current preview IBuildable pointer.
+	inline IBuildable* GetPreview();
 
 	// Updates the building preview position and aspect if is currently previewing.
 	void HandlePreview(const ABuilderPlayerController& Controller);
@@ -82,13 +76,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Building Rules")
 	float MaxCornerDifference = 200.0f;
 
-	inline AGenericBuilderGameModeBase* GetGameMode() { return Cast<AGenericBuilderGameModeBase>(GetWorld()->GetAuthGameMode()); }
+	// Get Current Auth GameMode.
+	inline AGenericBuilderGameModeBase* GetGameMode();
 
+	// Get the owning player of this component.
 	inline ABuilderPlayerPawn* GetOwningPlayer();
 
+	// Get the owning player's state.
 	inline ABuilderPlayerState* GetPlayerState();
-
-	// Get Location adjusted to map grid.
-	inline void GetRoundedLocation(FVector& WorldLocation);
 	
 };

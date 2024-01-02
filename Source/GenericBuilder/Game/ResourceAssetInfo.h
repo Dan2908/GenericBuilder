@@ -8,7 +8,6 @@
 
 #include "ResourceAssetInfo.generated.h"
 
-
 /**
 * Basic Structure holding asset data for resources
 */
@@ -17,7 +16,8 @@ struct FResourceAssetInfo : public FGameAssetInfo
 {
 	GENERATED_BODY()
 
-	FResourceAssetInfo(const TEnumAsByte<EGB_Resources> ResourceID = TEnumAsByte<EGB_Resources>(0));
+	// Constructor
+	FResourceAssetInfo(const TEnumAsByte<EGB_Resources> ID = TEnumAsByte<EGB_Resources>(0));
 	// Resource Count Type.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Resource Data")
 	TEnumAsByte<EGB_Resources> ResourceID;

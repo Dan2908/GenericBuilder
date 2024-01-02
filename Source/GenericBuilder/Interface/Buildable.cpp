@@ -5,6 +5,7 @@
 
 #include "BuilderPlayerState.h"
 #include "GenericBuilderGameModeBase.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 
 // Get the current available buildings from the current game mode collection
@@ -101,18 +102,6 @@ inline void IBuildable::SetNormalAspect()
 {
 	SetMaterialAspect(DefaultAppearance);
 
-}
-// ---------------------------------------------------------------
-
-// Wrapper to get current game mode stepsize for location.
-inline const float IBuildable::GetStepSize()
-{
-	if (AGenericBuilderGameModeBase* GM = FetchBuilderGM())
-	{
-		return GM->GetStepSize();
-	}
-
-	return 0.0f;
 }
 // ---------------------------------------------------------------
 

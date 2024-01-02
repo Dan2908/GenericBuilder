@@ -109,7 +109,7 @@ void ARoadSpline::ProjectSplinePointsToGround()
 // ---------------------------------------------------------------
 
 
-const bool ARoadSpline::HandleMouseMove(const FVector MouseLandLocation)
+const bool ARoadSpline::MoveBuildable(const FVector MouseLandLocation)
 {
 	FVector NewLocation = MouseLandLocation;
 	Tracer::FixLocationToGrid(NewLocation, GetStepSize());

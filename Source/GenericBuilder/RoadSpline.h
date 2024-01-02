@@ -50,7 +50,7 @@ public:
 	// IBuildable
 		// 
 		// Move this buildable over the land following the user cursor.
-	virtual const bool HandleMouseMove(const FVector MouseLandLocation) override;
+	virtual const bool MoveBuildable(const FVector MouseLandLocation) override;
 	// Rotate this building by DeltaYaw.
 	virtual void RotateBuildable(const float DeltaYaw) override;
 	// Checks if this buildable can be afford by the player

@@ -13,9 +13,10 @@ struct FResourceVault;
 struct FBuildingAssetInfo;
 struct FPreviewMaterialSettings;
 
+// --------------------------
+// Enum EGB_BuildableType
+// --------------------------
 
-
-// Type of building
 UENUM(BlueprintType)
 enum EGB_BuildableType
 {
@@ -24,7 +25,6 @@ enum EGB_BuildableType
 	Storage,
 	Road
 };
-
 
 // --------------------------
 // Struct FPreviewMaterialSettings
@@ -60,6 +60,10 @@ static const FPreviewMaterialSettings BadLocationAppearance = FPreviewMaterialSe
 // Default Aspect
 static const FPreviewMaterialSettings DefaultAppearance = FPreviewMaterialSettings(FLinearColor::White, 1.0f);
 
+// --------------------------
+// IBuildable
+// --------------------------
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UBuildable : public UInterface
@@ -77,62 +81,48 @@ class GENERICBUILDER_API IBuildable
 	GENERATED_BODY()
 
 public:
+
 	// Buildable type from EGB_BuildableType enum.
 	TEnumAsByte<EGB_BuildableType> BuildableType;
+
 	// Custom buildable ID
 	int BuildableID = 0;
 
 	// Move this buildable over the land following the user cursor.
 	UFUNCTION(Category = "Buildable Interface")
-	virtual const bool HandleMouseMove(const FVector MouseLandLocation) 
-	{
-		return true;
-	}
+	virtual void MoveBuildable(const FVector NewLocation) {}
+	
 	// Rotate this building by DeltaYaw.
-	virtual void RotateBuildable(const float DeltaYaw) 
-	{}
+	virtual void RotateBuildable(const float DeltaYaw) {}
+
 	// Checks if this buildable can be afford by the player
-	virtual const bool CanAfford(const FResourceVault& PlayerResources)
-	{
-		return true;
-	}
+	virtual const bool CanAfford(const FResourceVault& PlayerResources) { return false; }
+
 	// Checks if this buildable is obstructed in the current location
-	virtual const bool IsObstructed()
-	{
-		return true;
-	}
+	virtual const bool IsObstructed() { return true; }
+
 	// Checks if the land under building is correct
-	virtual const bool IsLandRight()
-	{
-		return true;
-	}
-	// Disables collision for this actor.
-	virtual void DisableCollision()
-	{}
+	virtual const bool IsLandRight() { return false; }
+
+	// Get Construction Cost for this building from the current available buildings from the current collection.
+	virtual const FResourceVault* GetConstructionCost() { return nullptr; }
+
+	// Gets the calculated extents for this buildable
+	virtual FVector2D GetExtents() const { return FVector2D(); }
 
 	// TODO: Find a system to fetch the can't build reasons
 	// Return true if CanAfford, IsObstructed and IsLandRight evaluate to true. False if at least one is false.
 	const bool CanBuild(ABuilderPlayerState* PlayerState);
 
-	// Get Construction Cost for this building from the current available buildings from the current collection.
-	virtual const FResourceVault* GetConstructionCost()
-	{
-		return nullptr;
-	}
-	// Gets the calculated extents for this buildable
-	virtual FVector2D GetExtents() const
-	{
-		return FVector2D();
-	}
-
-	// Use DMIs to set preview aspect if can build or cannot build.
+	// Use DMIs to set preview aspect according to CanBuild.
 	inline void SetPreviewAspect(const bool CanBuild);
+
 	// Back to normal material aspect, when is no longer a preview.
 	inline void SetNormalAspect();
 
 protected:
 
-	// Gets the available buildings for the current building collection
+	// Gets the available buildings for the current building collection.
 	const TArray<FBuildingAssetInfo>* GetAvailableBuildings();
 
 	// Generate Dynamic Material Instances from existing mesh materials. Returns true if all materials could be created.
@@ -140,10 +130,6 @@ protected:
 
 	// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
 	inline void SetMaterialAspect(const FPreviewMaterialSettings MaterialInfo);
-	
-
-	// Wrapper to get current game mode stepsize for location.
-	inline const float GetStepSize();
 
 private:
 

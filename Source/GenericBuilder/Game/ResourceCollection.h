@@ -19,6 +19,8 @@ USTRUCT(BlueprintType)
 struct FResourceVault
 {
 	GENERATED_BODY()
+	// Constructor
+	FResourceVault();
 	// Array of resources
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FResourceValue> Resources;
@@ -26,17 +28,18 @@ struct FResourceVault
 	inline void AddResource(const EGB_Resources ResourceType, const float Amount);
 	// Adds the given Resource to this Vault.
 	inline void AddResource(const FResourceValue& Resource);
-	// Constructor
-	FResourceVault();
+	// Returns true if the resources in this vault are enough to pay the CostArray. False otherwise.
+	// Remaining array is filled with the result of applying the cost to this vault.
+	const bool GetPreviewedPayment(const TArray<FResourceValue>& CostArray, TArray<FResourceValue>& Preview);
+	// Returns true if the resources in this vault are enough to pay the CostArray. False otherwise.
+	// Note: cheaper function than GetPreviewedPayment to quickly get if can afford.
+	const bool CanAfford(const TArray<FResourceValue>& CostArray) const;
+	// Force set the resources to the given NewValues.
+	void SetResources(const TArray<FResourceValue>& NewValues);
+
+private:
 	// Initialize Vault with and according to static definitions.
 	inline void InitializeVault();
-	// Preview applying given a given cost. Returns true if the stored resources are enough.
-	// Remaining is filled with the result of applying the cost to this vault.
-	const bool GetPreviewedPayment(const TArray<FResourceValue>& CostArray, TArray<FResourceValue>& Preview);
-	// Preview applying given a given cost. Returns true if the stored resources are enough.
-	const bool CanAfford(const TArray<FResourceValue>& CostArray) const;
-
-	void SetResources(const TArray<FResourceValue>& NewValues);
 
 };
 
@@ -54,7 +57,7 @@ public:
 	UResourceCollection();
 
 	// Gets resource collection reference
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	const TArray<FResourceAssetInfo>& GetResources() const;
 
 private:

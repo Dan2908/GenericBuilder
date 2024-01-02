@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Definitions/GameAssetInfo.h"
+#include "Interface/Buildable.h"
 #include "ResourceAssetInfo.h"
 #include "ResourceCollection.h"
-#include "Interface/Buildable.h"
 
 #include "BuildingAssetInfo.generated.h"
 

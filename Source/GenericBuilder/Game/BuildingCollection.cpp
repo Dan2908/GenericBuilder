@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BuildingCollection.h"
 
-#include "ResourceCollection.h"
 #include "BaseBuilding.h"
 #include "Engine/Texture2D.h"
+#include "ResourceCollection.h"
 
 // Constructor
 UBuildingCollection::UBuildingCollection()
@@ -18,14 +17,15 @@ UBuildingCollection::UBuildingCollection()
 }
 // ---------------------------------------------------------------
 
-
-// Gets buildings collection reference
+// Gets const array of buildings in this collection.
 const TArray<FBuildingAssetInfo>& UBuildingCollection::GetBuildings() const
 {
 	return Buildings;
 }
+// ---------------------------------------------------------------
 
-
+// Called when a property on this object has been modified externally.
+// @param PropertyThatChanged the property that was modified.
 void UBuildingCollection::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	// Lambda function
