@@ -9,12 +9,12 @@
 
 #include "BuilderPlayerPawn.generated.h"
 
+class ABaseBuilding;
 class ABuilderPlayerController;
 class ABuilderPlayerState;
-class ABaseBuilding;
+class AGenericBuilderGameModeBase;
 class UBuilderInputCollection;
 class UPlayerVault;
-class AGenericBuilderGameModeBase;
 struct FBuildingAssetInfo;
 
 UCLASS()
@@ -29,8 +29,6 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
 
 	// Add zoom clamped to the min and max (this is spring arm length)
 	void AddZoom(const float DeltaZoom);
@@ -54,6 +52,7 @@ protected:
 	void Escape(const FInputActionValue& Value);
 
 public:	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -101,9 +100,6 @@ private:
 	UBuilderInputCollection* InputCollection;
 
 	ABuilderPlayerController* MyController;
-
-	// Do the logics to check and transform currently held building
-	void HandleHeldBuilding();
 
 	// Get the movement scaled by World's Delta seconds.
 	template<typename T = float>

@@ -1,8 +1,9 @@
-#include "ResourceAssetInfo.h"
-
 // Author: Danilo Brandolin
 
-FResourceAssetInfo::FResourceAssetInfo(const TEnumAsByte<EGB_Resources> ResourceID)
+#include "ResourceAssetInfo.h"
+
+// Constructor
+FResourceAssetInfo::FResourceAssetInfo(const TEnumAsByte<EGB_Resources> ID)
 {
-	this->ResourceID = ResourceID;
+	this->ID = ID;
 }

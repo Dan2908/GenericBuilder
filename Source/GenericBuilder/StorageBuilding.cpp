@@ -1,14 +1,14 @@
 // Author: Danilo Brandolin
 
-
 #include "StorageBuilding.h"
-#include "BuilderPlayerState.h"
 
+#include "BuilderPlayerState.h"
 #include "Definitions/Resources.h"
 
+// Constructor
 AStorageBuilding::AStorageBuilding()
 {
-	BaseBuildingType = TEnumAsByte<EGB_BuildingTypes>(EGB_BuildingTypes::Storage);
+	BuildableType = TEnumAsByte<EGB_BuildableType>(EGB_BuildableType::Storage);
 	 
 }
 

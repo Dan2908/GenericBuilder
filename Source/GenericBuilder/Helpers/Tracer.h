@@ -32,24 +32,15 @@ public:
 	// Get the lowest corner location.
 	inline const float GetLowestCorner();
 
-	// Get the highest location projected to the ground.
-	static inline const float GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location)
-	{
-		const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
-		
-		FHitResult Hit;
-		WorldObject->GetWorld()->SweepSingleByChannel
-		(
-			Hit,
-			Location + UpDistance,
-			Location - UpDistance,
-			FRotator::ZeroRotator.Quaternion(),	// no rotation
-			ECollisionChannel::ECC_GameTraceChannel1,	// ground channel
-			FCollisionShape::MakeBox(PlacementBox.GetExtent()) // Make a box from PlacementBox (divide by 2 tp get half extents)
-		);
+	// Trace Line to ground given a point in the world. It takes the point and projects it
+	// through the Z axis and hits "Landscape" channel.
+	static inline FVector TraceGround(UObject* WorldObject, const FVector Location);
 
-		return Hit.Location.Z;
-	}
+	// Get the highest location projected to the ground.
+	static inline const float GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location);
+
+	// Fixes given Location rounding it to the given StepSize.
+	static inline const void FixLocationToGrid(FVector& Location, const float StepSize);
 
 private:
 

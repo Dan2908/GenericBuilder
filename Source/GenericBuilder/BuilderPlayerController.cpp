@@ -1,13 +1,15 @@
 // Author: Danilo Brandolin
 // 11/13/2023
 
-
 #include "BuilderPlayerController.h"
 
 #include "BuilderComponent.h"
+#include "GenericBuilderGameModeBase.h"
+#include "Helpers/Tracer.h"
+#include "Interface/Buildable.h"
 
 // Gets The currento controllerMode
-inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
+inline TEnumAsByte<EGB_ControlMode> ABuilderPlayerController::GetControlMode()
 {
 	return ControlMode;
 }
@@ -16,47 +18,37 @@ inline TEnumAsByte<EControlMode> ABuilderPlayerController::GetControlMode()
 // Sets control to "Default Mode"
 void ABuilderPlayerController::SetDefaultMode()
 {
-	ControlMode = EControlMode::Default;
+	ControlMode = EGB_ControlMode::Default;
 	// Show cursor
 	SetShowMouseCursor(true);
 
 }
 // ---------------------------------------------------------------
 
-// Get where in the world is the player mouse pointing at.
-const bool ABuilderPlayerController::GetMouseLocationInLand(FVector& Location) const
+// Get where in the world is the player mouse pointing at adjusted to the grid.
+const bool ABuilderPlayerController::GetMouseLocationInGrid(FVector& Location, const float StepSize) const
 {
-	FHitResult Hit;
 	FVector Direction;
-
 	DeprojectMousePositionToWorld(Location, Direction);
 
+
+	FHitResult Hit;
 	if (GetWorld()->LineTraceSingleByChannel(Hit, Location, Location + Direction * 3000, ECollisionChannel::ECC_GameTraceChannel1))
 	{
 		Location = Hit.Location;
+		Tracer::FixLocationToGrid(Location, StepSize);
 		return true;
 	}
+
 	
 	return false;
 }
+// ---------------------------------------------------------------
 
 // Returns true if controller is in building mode. False otherwise.
 const bool ABuilderPlayerController::IsInBuildingMode()
 {
-	return GetControlMode() == EControlMode::BuildMode;
-}
-// ---------------------------------------------------------------
-
-// TODO: Correct this, mouse delta seems to always return 0.
-// Check if the mouse movement wasn't nearly zero
-const bool ABuilderPlayerController::GetDidNotMove()
-{
-	FVector2D MouseDelta;
-	GetInputMouseDelta(MouseDelta.X, MouseDelta.Y);
-
-	UE_LOG(LogTemp, Display, TEXT("MouseDelta.X = %f"), MouseDelta.X);
-	UE_LOG(LogTemp, Display, TEXT("MouseDelta.Y = %f"), MouseDelta.Y);
-	return FMath::IsNearlyZero(MouseDelta.X) && FMath::IsNearlyZero(MouseDelta.Y);
+	return GetControlMode() == EGB_ControlMode::BuildMode;
 }
 // ---------------------------------------------------------------
 
@@ -64,7 +56,17 @@ const bool ABuilderPlayerController::GetDidNotMove()
 void ABuilderPlayerController::SetBuildMode()
 {
 	// Set build mode
-	ControlMode = EControlMode::BuildMode;
+	ControlMode = EGB_ControlMode::BuildMode;
+	// Hide cursor
+	SetShowMouseCursor(false);
+}
+// ---------------------------------------------------------------
+
+// Sets control to "Build Road Mode"
+void ABuilderPlayerController::SetBuildRoadMode()
+{
+	// Set build mode
+	ControlMode = EGB_ControlMode::BuildRoadMode;
 	// Hide cursor
 	SetShowMouseCursor(false);
 }

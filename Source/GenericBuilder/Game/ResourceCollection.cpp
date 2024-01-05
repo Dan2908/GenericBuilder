@@ -2,9 +2,14 @@
 
 #include "ResourceCollection.h"
 
+// ---------------------------------------------------------------
+//  UResourceCollection
+// ---------------------------------------------------------------
 
 UResourceCollection::UResourceCollection()
 {
+	// TODO: Initialize the resource collection array (TArray<FResourceAssetInfo> Resources)
+	// to hold each EGB_Resources in the same order, this must correspond to FResourceVault.
 }
 // ---------------------------------------------------------------
 
@@ -15,8 +20,16 @@ const TArray<FResourceAssetInfo>& UResourceCollection::GetResources() const
 }
 // ---------------------------------------------------------------
 
+
 // ---------------------------------------------------------------
 //  FResourceVault
+// ---------------------------------------------------------------
+
+// Constructor
+FResourceVault::FResourceVault()
+{
+	InitializeVault();
+}
 // ---------------------------------------------------------------
 
 // Adds the Amount of ResourceType to this Vault.
@@ -30,17 +43,11 @@ void FResourceVault::AddResource(const EGB_Resources ResourceType, const float A
 // Adds the given Resource to this Vault.
 inline void FResourceVault::AddResource(const FResourceValue& Resource)
 {
-	AddResource(Resource.ID, Resource.Value);
+	AddResource(Resource.ResourceID, Resource.Value);
 
 }
 // ---------------------------------------------------------------
 
-// Constructor
-FResourceVault::FResourceVault()
-{
-	InitializeVault();
-}
-// ---------------------------------------------------------------
 
 // Initialize Vault with and according to static definitions.
 inline void FResourceVault::InitializeVault()
@@ -65,7 +72,7 @@ const bool FResourceVault::GetPreviewedPayment(const TArray<FResourceValue>& Cos
 	Preview.Reserve(CostArray.Num());
 	for (const FResourceValue& Cost : CostArray)
 	{
-		Preview.Push(FResourceValue(Cost.ID, Resources[Cost.ID].Value - Cost.Value));
+		Preview.Push(FResourceValue(Cost.ResourceID, Resources[Cost.ResourceID].Value - Cost.Value));
 		if (Preview.Last().Value < 0)
 		{
 			Enough = false;
@@ -74,12 +81,15 @@ const bool FResourceVault::GetPreviewedPayment(const TArray<FResourceValue>& Cos
 
 	return Enough;
 }
+// ---------------------------------------------------------------
 
-const bool FResourceVault::GetCanPay(const TArray<FResourceValue>& CostArray)
+// Returns true if the resources in this vault are enough to pay the CostArray. False otherwise.
+// Note: cheaper function than GetPreviewedPayment to quickly get if can afford.
+const bool FResourceVault::CanAfford(const TArray<FResourceValue>& CostArray) const
 {
 	for (const FResourceValue& Cost : CostArray)
 	{
-		const float Remaining = Resources[Cost.ID].Value - Cost.Value;
+		const float Remaining = Resources[Cost.ResourceID].Value - Cost.Value;
 		if (Remaining < 0)
 		{
 			return false;
@@ -90,12 +100,12 @@ const bool FResourceVault::GetCanPay(const TArray<FResourceValue>& CostArray)
 }
 // ---------------------------------------------------------------
 
-// Sets the resources to the given NewValues
+// Force set the resources to the given NewValues.
 void FResourceVault::SetResources(const TArray<FResourceValue>& NewValues)
 {
 	for (const FResourceValue& NewValue : NewValues)
 	{
-		Resources[NewValue.ID].Value = NewValue.Value;
+		Resources[NewValue.ResourceID].Value = NewValue.Value;
 	}
 }
 // ---------------------------------------------------------------

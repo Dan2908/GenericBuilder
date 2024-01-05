@@ -7,7 +7,6 @@
 
 #include "Resources.generated.h"
 
-
 //List of existing Resources.
 UENUM(BlueprintType)
 enum EGB_Resources
@@ -23,8 +22,7 @@ enum EGB_Resources
 
 };
 
-
-//The counting method of a resource. Used for wrapping the ResourceValue.
+// The counting method of a resource. Used for wrapping the Resource Value.
 UENUM(BlueprintType)
 enum EGB_ResourceCount
 {
@@ -32,7 +30,6 @@ enum EGB_ResourceCount
 	Float,
 	Boolean
 };
-
 
 // Type of resource production.
 UENUM(BlueprintType)
@@ -56,19 +53,21 @@ struct FResourceValue
 	{}
 
 	FResourceValue(EGB_Resources ID, const int Value = 0)
-		: ID(ID)
+		: ResourceID(ID)
 		, Value(Value)
 	{}
 
+	// Indicates wich resource is this. From EGB_Resources.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TEnumAsByte<EGB_Resources> ID = EGB_Resources::Currency;
+	TEnumAsByte<EGB_Resources> ResourceID = EGB_Resources::Currency;
 
+	// Amount of this resource.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	double Value;
 
-	inline const bool operator==(const EGB_Resources ResourceID)
+	inline const bool operator==(const EGB_Resources ID)
 	{
-		return ID == ResourceID;
+		return ResourceID == ID;
 	}
 
 };

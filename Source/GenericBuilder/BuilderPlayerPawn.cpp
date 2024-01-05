@@ -4,18 +4,16 @@
 
 #include "BuilderPlayerPawn.h"
 
-#include "BuilderComponent.h"
 #include "BaseBuilding.h"
+#include "BuilderComponent.h"
 #include "BuilderPlayerController.h"
+#include "BuilderPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Helpers/BuilderInputCollection.h"
 #include "GenericBuilderGameModeBase.h"
-#include "BuilderPlayerState.h"
+#include "Helpers/BuilderInputCollection.h"
+#include "Interface/Buildable.h"
 
 
 // Sets default values
@@ -43,9 +41,9 @@ void ABuilderPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(MyController->GetControlMode() == EControlMode::BuildMode)
+	if(MyController->GetControlMode() == EGB_ControlMode::BuildMode)
 	{
-		HandleHeldBuilding();
+		BuilderComponent->HandlePreview(*MyController);
 	}
 
 	// Update Production Task
@@ -77,32 +75,11 @@ void ABuilderPlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 // Call this from UI to check and set building controller
 void ABuilderPlayerPawn::CallBuildMode(const FBuildingAssetInfo& SelectedBuilding)
 {
-	if (BuilderComponent->StartPreview(SelectedBuilding))
+	if (BuilderComponent->StartPreview(SelectedBuilding.BaseBuilding, SelectedBuilding.ID))
 	{
 		MyController->SetBuildMode();
 	}
 	
-}
-// ---------------------------------------------------------------
-
-
-// Do the logics to check and transform currently held building
-void ABuilderPlayerPawn::HandleHeldBuilding()
-{
-	FVector Location;
-	
-	if (!MyController->GetMouseLocationInLand(Location))
-	{
-		return;
-	}
-
-	// Adjust the location to the grid.
-	BuilderComponent->AdjustPreviewLocation(Location);
-
-	const bool CanBuild = BuilderComponent->CanBuildHere();
-	
-	BuilderComponent->SetBuildingAspect(CanBuild);
-
 }
 // ---------------------------------------------------------------
 
@@ -116,22 +93,7 @@ void ABuilderPlayerPawn::BeginPlay()
 	AddZoom(0);
 
 	BuilderPlayerState = CastChecked<ABuilderPlayerState>(GetPlayerState());
-	
 
-	//FTimerHandle ProductionHandle;
-	//FTimerDelegate ProductionDelegate;
-	//ProductionDelegate.BindUFunction(this, "UpdateProductionCount");
-	//GetWorld()->GetTimerManager().SetTimer(ProductionHandle, ProductionDelegate, );
-
-
-
-}
-
-void ABuilderPlayerPawn::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	//PropertyChangedEvent.GetPropertyName() == 
 }
 
 // Move the pawn always snapped to the landscape
@@ -188,10 +150,7 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 		return;
 	}
 
-	if (BuilderComponent->CanBuildHere())
-	{
-		BuilderComponent->ConfirmBuilding();
-	}
+	BuilderComponent->ConfirmBuilding();
 
 }
 // ---------------------------------------------------------------
@@ -200,11 +159,7 @@ void ABuilderPlayerPawn::Confirm(const FInputActionValue& Value)
 void ABuilderPlayerPawn::Escape(const FInputActionValue& Value)
 {
 	// Call Component to leave the building
-	if (ABaseBuilding* Discarded = BuilderComponent->StopPreview())
-	{
-		// Destroy discarded building
-		GetWorld()->DestroyActor(Discarded);
-	}
+	BuilderComponent->StopPreview();
 
 	// Set default control mode
 	MyController->SetDefaultMode();

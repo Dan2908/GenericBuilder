@@ -4,10 +4,16 @@
 
 // Constructor
 Tracer::Tracer()
-	: CornerA()
+	: CurrentWorld(nullptr)
+	, CornerA()
 	, CornerB()
 	, CornerC()
 	, CornerD()
+{}
+// ---------------------------------------------------------------
+
+// Destructor
+Tracer::~Tracer()
 {}
 // ---------------------------------------------------------------
 
@@ -16,12 +22,8 @@ Tracer::Tracer(UWorld* World, const FTransform WorldTransform, const float Exten
 	: Tracer()
 {
 	SetupTracer(World, WorldTransform, ExtentX, ExtentY);
-}
-// ---------------------------------------------------------------
 
-// Destructor
-Tracer::~Tracer()
-{}
+}
 // ---------------------------------------------------------------
 
 // Pass the building transform (center location in land and rotation) and extents to calculate Corners.
@@ -75,6 +77,54 @@ inline const float Tracer::GetLowestCorner()
 	return std::fmin(Corners[0].Z, 
 			  std::fmin(Corners[1].Z, 
 				 std::fmin(Corners[2].Z, Corners[3].Z)));
+}
+// ---------------------------------------------------------------
+
+// Trace Line to ground given a point in the world. It takes the point and projects it
+// through the Z axis and hits "Landscape" channel.
+inline FVector Tracer::TraceGround(UObject* WorldObject, const FVector Location)
+{
+	const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
+
+	FHitResult Hit;
+	const bool Success =
+		WorldObject->GetWorld()->LineTraceSingleByChannel(
+			Hit,
+			Location + UpDistance,
+			Location - UpDistance,
+			ECollisionChannel::ECC_GameTraceChannel1
+		);
+
+	return Success ? Hit.Location : Location;
+}
+// ---------------------------------------------------------------
+
+
+// Get the highest location projected to the ground.
+inline const float Tracer::GetHighestPoint(UObject* WorldObject, const FBox& PlacementBox, const FVector Location)
+{
+	const FVector UpDistance = FVector::UpVector * sTracingHalfDistance;
+
+	FHitResult Hit;
+	WorldObject->GetWorld()->SweepSingleByChannel
+	(
+		Hit,
+		Location + UpDistance,
+		Location - UpDistance,
+		FRotator::ZeroRotator.Quaternion(),	// no rotation
+		ECollisionChannel::ECC_GameTraceChannel1,	// ground channel
+		FCollisionShape::MakeBox(PlacementBox.GetExtent()) // Make a box from PlacementBox (divide by 2 tp get half extents)
+	);
+
+	return Hit.Location.Z;
+}
+// ---------------------------------------------------------------
+
+// Fixes given Location rounding it to the given StepSize.
+inline const void Tracer::FixLocationToGrid(FVector& Location, const float StepSize)
+{
+	Location.X = ceil(Location.X / StepSize) * StepSize;
+	Location.Y = ceil(Location.Y / StepSize) * StepSize;
 }
 // ---------------------------------------------------------------
 

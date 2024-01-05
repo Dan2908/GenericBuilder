@@ -3,11 +3,8 @@
 
 #include "BaseBuilding.h"
 
-#include "Brushes/SlateImageBrush.h"
 #include "Game/BuildingCollection.h"
-#include "Engine/Texture2D.h"
-#include "Materials/MaterialInstanceDynamic.h"
-
+#include "Helpers/Tracer.h"
 
 // Sets default values
 ABaseBuilding::ABaseBuilding()
@@ -29,36 +26,85 @@ void ABaseBuilding::Tick(float DeltaTime)
 }
 // ---------------------------------------------------------------
 
-// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
-void ABaseBuilding::SetMaterialAspect(const FDynamicMaterialInfo MaterialInfo)
-{
-	for (UMaterialInstanceDynamic* MID : MIDs)
-	{
-		MID->SetVectorParameterValue(FName("Tint"), MaterialInfo.Color);
-		MID->SetScalarParameterValue(FName("Opacity"), MaterialInfo.Opacity);
-	}
-}
-// ---------------------------------------------------------------
-
-// Generate Material Instance Dynamics from existing materials
-void ABaseBuilding::GenerateMIDs()
-{
-	const int MaterialCount = Mesh->GetNumMaterials();
-	for (int i = 0; i < MaterialCount; ++i)
-	{
-		MIDs.Push(Mesh->CreateAndSetMaterialInstanceDynamic(i));
-	}
-}
-// ---------------------------------------------------------------
-
 // Called when the game starts or when spawned
 void ABaseBuilding::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GenerateMIDs();
 
+	GeneratePreviewMaterials(Mesh);
 }
 // ---------------------------------------------------------------
 
 
+// ---------------------------------------------------------------
+// IBuildable Definitions
+// ---------------------------------------------------------------
+
+// Move this buildable over the land following the user cursor.
+void ABaseBuilding::MoveBuildable(const FVector NewLocation)
+{
+	SetActorLocation(NewLocation);
+}
+// ---------------------------------------------------------------
+
+// Rotate this building by DeltaYaw.
+void ABaseBuilding::RotateBuildable(const float DeltaYaw)
+{
+	FRotator Rot(0, DeltaYaw, 0);
+	AddActorLocalRotation(Rot);
+
+}
+// ---------------------------------------------------------------
+
+// Checks if this buildable can be afford by the player
+const bool ABaseBuilding::CanAfford(const FResourceVault& PlayerResources)
+{
+	return PlayerResources.CanAfford(GetConstructionCost()->Resources);
+
+}
+// ---------------------------------------------------------------
+
+// Checks if this buildable is obstructed in the current location
+const bool ABaseBuilding::IsObstructed()
+{
+	TSet<AActor*> OverlappingActors;
+	GetOverlappingActors(OverlappingActors);
+	
+	return OverlappingActors.Num() > 0;
+}
+// ---------------------------------------------------------------
+
+// Checks if the land under building is correct
+const bool ABaseBuilding::IsLandRight()
+{
+	Tracer BuildTracer(GetWorld(), GetActorTransform(), Extents.X, Extents.Y);
+
+	// Correct preview z position
+	const FVector PreviewLocation = GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
+
+	return BuildTracer.GetCornersDiff() < MaxCornerDifference;
+}
+// ---------------------------------------------------------------
+
+// Get Construction Cost for this building from the current available buildings from the current collection.
+const FResourceVault* ABaseBuilding::GetConstructionCost()
+{
+	if (const TArray<FBuildingAssetInfo>* BuildingCollection = GetAvailableBuildings())
+	{
+		if (BuildingCollection->IsValidIndex(BuildableID))
+		{
+			return &(*BuildingCollection)[BuildableID].ConstructionCost;
+		}
+
+	}
+
+	return nullptr;
+}
+// ---------------------------------------------------------------
+
+// Gets the calculated extents for this buildable
+inline FVector2D ABaseBuilding::GetExtents() const
+{
+	return Extents;
+}
+// ---------------------------------------------------------------

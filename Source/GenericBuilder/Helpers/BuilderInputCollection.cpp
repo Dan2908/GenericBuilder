@@ -20,7 +20,6 @@ void UBuilderInputCollection::StartInputObject(UInputComponent* PlayerInputCompo
 		}
 	}
 
-
 }
 // ---------------------------------------------------------------
 

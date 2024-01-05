@@ -20,7 +20,9 @@ class GENERICBUILDER_API AStorageBuilding : public ABaseBuilding
 
 public:
 
+	// Constructor
 	AStorageBuilding();
+
 	// Set the owning player state reference.
 	UFUNCTION()
 	void SetBuilderPlayerState(ABuilderPlayerState* PlayerState);
