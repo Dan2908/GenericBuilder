@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerState.h"
 #include "Game/BuildingAssetInfo.h"
+#include "GameFramework/PlayerState.h"
 
 #include "BuilderPlayerState.generated.h"
 
@@ -38,7 +38,7 @@ public:
 	const bool Pay(const TArray<FResourceValue>& CostArray);
 	// Register a buildingto  belong to this player
 
-	void RegisterBuilding(IBuildable* NewBuilding, const EGB_BuildableType BuildingType);
+	void RegisterBuilding(IBuildable* RegisterNewBuilding, const EGB_BuildableType BuildingType);
 	// Unregister a building that belongs to this player. Returns false if OurBuilding is not found in this player's list.
 
 	const bool UnregisterBuilding(IBuildable* OurBuilding);
@@ -54,7 +54,7 @@ private:
 	// Time in seconds to update the production count.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float ProductionUpdateTime = 1.0f;
-	// Used to accumulate timer in order to launch the update task
+	// Auxiliar to accumulate timer in order to launch the update task
 	float ProductionUpdateCounter = 0.0f;
 	// Parallel task to perform production updates async.
 	UE::Tasks::FTask ProductionTask = {};

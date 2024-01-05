@@ -46,27 +46,6 @@ public:
 	void Cancel()
 	{}
 
-	/*
-	// IBuildable
-		// 
-		// Move this buildable over the land following the user cursor.
-	virtual const bool MoveBuildable(const FVector MouseLandLocation) override;
-	// Rotate this building by DeltaYaw.
-	virtual void RotateBuildable(const float DeltaYaw) override;
-	// Checks if this buildable can be afford by the player
-	virtual const bool CanAfford(const FResourceVault& PlayerResources) override;
-	// Checks if this buildable is obstructed in the current location
-	virtual const bool IsObstructed() override;
-	// Checks if the land under building is correct
-	virtual const bool IsLandRight() override;
-	// Confirm action to build.
-	virtual bool Confirm() override;
-	// Get Construction Cost for this building from the current available buildings from the current collection.
-	virtual const FResourceVault& GetConstructionCost() override;
-	// Gets the calculated extents for this buildable
-	virtual inline FVector2D GetExtents() const override;
-	*/
-
 protected:
 
 private:

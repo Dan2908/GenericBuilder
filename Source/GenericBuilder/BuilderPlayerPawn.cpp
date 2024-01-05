@@ -4,18 +4,15 @@
 
 #include "BuilderPlayerPawn.h"
 
-#include "BuilderComponent.h"
 #include "BaseBuilding.h"
+#include "BuilderComponent.h"
 #include "BuilderPlayerController.h"
+#include "BuilderPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Helpers/BuilderInputCollection.h"
 #include "GenericBuilderGameModeBase.h"
-#include "BuilderPlayerState.h"
+#include "Helpers/BuilderInputCollection.h"
 #include "Interface/Buildable.h"
 
 
@@ -44,7 +41,7 @@ void ABuilderPlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(MyController->GetControlMode() == EControlMode::BuildMode)
+	if(MyController->GetControlMode() == EGB_ControlMode::BuildMode)
 	{
 		BuilderComponent->HandlePreview(*MyController);
 	}
@@ -97,13 +94,6 @@ void ABuilderPlayerPawn::BeginPlay()
 
 	BuilderPlayerState = CastChecked<ABuilderPlayerState>(GetPlayerState());
 
-}
-
-void ABuilderPlayerPawn::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-
-	//PropertyChangedEvent.GetPropertyName() == 
 }
 
 // Move the pawn always snapped to the landscape

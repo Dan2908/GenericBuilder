@@ -4,10 +4,16 @@
 
 // Constructor
 Tracer::Tracer()
-	: CornerA()
+	: CurrentWorld(nullptr)
+	, CornerA()
 	, CornerB()
 	, CornerC()
 	, CornerD()
+{}
+// ---------------------------------------------------------------
+
+// Destructor
+Tracer::~Tracer()
 {}
 // ---------------------------------------------------------------
 
@@ -18,11 +24,6 @@ Tracer::Tracer(UWorld* World, const FTransform WorldTransform, const float Exten
 	SetupTracer(World, WorldTransform, ExtentX, ExtentY);
 
 }
-// ---------------------------------------------------------------
-
-// Destructor
-Tracer::~Tracer()
-{}
 // ---------------------------------------------------------------
 
 // Pass the building transform (center location in land and rotation) and extents to calculate Corners.

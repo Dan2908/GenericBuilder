@@ -1,13 +1,13 @@
 // Author: Danilo Brandolin
 
-
 #include "BuilderPlayerState.h"
+
 #include "BaseBuilding.h"
-#include "ProductionBuilding.h"
-#include "Tasks/Task.h"
-#include "RoadSpline.h"
 #include "Game/ResourceCollection.h"
 #include "Interface/Buildable.h"
+#include "ProductionBuilding.h"
+#include "RoadSpline.h"
+#include "Tasks/Task.h"
 
 
 // Checks if a payment can be done with the current PlayerResources. The OutCalculation is filled with the resources remaining.
@@ -26,17 +26,17 @@ const bool ABuilderPlayerState::Pay(const TArray<FResourceValue>& CostArray)
 // ---------------------------------------------------------------
 
 // Register a buildingto  belong to this player
-void ABuilderPlayerState::RegisterBuilding(IBuildable* NewBuilding, const EGB_BuildableType BuildingType)
+void ABuilderPlayerState::RegisterBuilding(IBuildable* RegisterNewBuilding, const EGB_BuildableType BuildingType)
 {
-	const bool BuildingAlreadyExists = PlayerBuildings.Find(NewBuilding) != INDEX_NONE;
+	const bool BuildingAlreadyExists = PlayerBuildings.Find(RegisterNewBuilding) != INDEX_NONE;
 	if (BuildingAlreadyExists)
 	{
 		return;
 	}
 	// Push new building
-	PlayerBuildings.Push(NewBuilding);
+	PlayerBuildings.Push(RegisterNewBuilding);
 	// Push as Production Building
-	AProductionBuilding* AsProductionBuilding = Cast<AProductionBuilding>(NewBuilding);
+	AProductionBuilding* AsProductionBuilding = Cast<AProductionBuilding>(RegisterNewBuilding);
 	if (AsProductionBuilding && BuildingType == EGB_BuildableType::Production)
 	{
 		ProductionBuildings.Push(AsProductionBuilding);
@@ -91,6 +91,7 @@ void ABuilderPlayerState::UpdateProductionCount(float DeltaTime)
 }
 // ---------------------------------------------------------------
 
+// Updates the production stock for every Production building of this player.
 void ABuilderPlayerState::UpdateProductionTask()
 {
 	for (AProductionBuilding* Building : ProductionBuildings)

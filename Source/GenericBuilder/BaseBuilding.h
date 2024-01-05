@@ -29,9 +29,11 @@ protected:
 
 public:	
 
+	// Flag to indicate if this building is active.
 	UPROPERTY(EditAnywhere, Category = "Building Adjustments")
 	bool bBuildingActive = true;
 
+	// TODO: Check if necessary
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

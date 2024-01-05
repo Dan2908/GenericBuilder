@@ -23,7 +23,7 @@ class GENERICBUILDER_API UBuilderComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
-	// Sets default values for this component's properties
+	// Constructor
 	UBuilderComponent();
 
 protected:
@@ -64,13 +64,13 @@ public:
 
 private:
 
+	// Auxiliar Game Mode pointer
 	AGenericBuilderGameModeBase* CurrentGameMode;
 
+	// Current preview Buildable
 	IBuildable* Preview;
+	// Current preview class.
 	TSubclassOf<AActor> PreviewClass;
-
-	float GridUnitSize;
-	float StepSize;
 
 	// Max distance difference between corners to consider buildable terrain
 	UPROPERTY(EditAnywhere, Category = "Building Rules")
