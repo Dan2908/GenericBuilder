@@ -131,10 +131,10 @@ protected:
 	// Sets the building appearance, this is used to mainly to create previews and tweak colors. 
 	inline void SetMaterialAspect(const FPreviewMaterialSettings MaterialInfo);
 
-	// Tries to get builder game mode from the current object's world. Returns null if not found.
-	inline const AGenericBuilderGameModeBase* FetchBuilderGM() const;
 private:
 
+	// Tries to get builder game mode from the current object's world. Returns null if not found.
+	inline AGenericBuilderGameModeBase* FetchBuilderGM();
 
 	// Dynamic Material Instances
 	TArray<class UMaterialInstanceDynamic*> DMIs;

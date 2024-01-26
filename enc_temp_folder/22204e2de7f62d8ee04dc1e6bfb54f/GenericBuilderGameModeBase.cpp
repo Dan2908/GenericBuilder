@@ -30,7 +30,7 @@ inline const int AGenericBuilderGameModeBase::GetPlayerIndex(ABuilderPlayerPawn*
 // ---------------------------------------------------------------
 
 // Gets the available buildings list for this game mode.
-const TArray<FBuildingAssetInfo>& AGenericBuilderGameModeBase::GetAvailableBuildings() const
+const TArray<FBuildingAssetInfo>& AGenericBuilderGameModeBase::GetAvailableBuildings()
 {
 	return BuildingCollection.GetDefaultObject()->GetBuildings();
 

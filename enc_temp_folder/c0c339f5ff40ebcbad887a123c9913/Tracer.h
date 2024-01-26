@@ -18,8 +18,6 @@ public:
 
 	Tracer(UWorld* World, const FTransform WorldTransform, const float ExtentX, const float ExtentY);
 
-	Tracer(UWorld* World, const FTransform WorldTransform, const FVector2D Extents);
-
 	~Tracer();
 
 	// Pass the desired Object transform (center location in land and rotation) and extents to calculate Corners.

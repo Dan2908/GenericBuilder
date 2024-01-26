@@ -33,7 +33,7 @@ public:
 	// Get the size of the minimum step adjusted to the landscape Grid.
 	inline const float GetStepSize() const { return GridUnitSize / MaxGridSubdivision; }
 
-	// Get the grid unit size.
+	// Get the size of the minimum step adjusted to the landscape Grid.
 	inline const float GetGridUnitSize() const { return GridUnitSize; }
 
 	// Adds the given target building to the game building list
@@ -47,7 +47,7 @@ public:
 
 	// Gets the available buildings list for this game mode.
 	UFUNCTION(BlueprintCallable)
-	const TArray<FBuildingAssetInfo>& GetAvailableBuildings() const;
+	const TArray<FBuildingAssetInfo>& GetAvailableBuildings();
 
 	// Gets the available resources list for this game mode.
 	UFUNCTION(BlueprintCallable)

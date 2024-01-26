@@ -26,11 +26,6 @@ Tracer::Tracer(UWorld* World, const FTransform WorldTransform, const float Exten
 }
 // ---------------------------------------------------------------
 
-Tracer::Tracer(UWorld* World, const FTransform WorldTransform, const FVector2D Extents)
-	: Tracer(World, WorldTransform, Extents.X, Extents.Y)
-{}
-// ---------------------------------------------------------------
-
 // Pass the building transform (center location in land and rotation) and extents to calculate Corners.
 void Tracer::SetupTracer(UWorld* World, const FTransform WorldTransform, const float ExtentX, const float ExtentY)
 {
