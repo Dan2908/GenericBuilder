@@ -16,6 +16,7 @@ The assets and UI art are hand made by me, just as placeholders for further real
 - Unreal Engine 5.2
 - Visual Studio 2022 / C++
 - Aseprite
+- Blender 3.5
 
 ---
 ### ScreenShots
