@@ -56,6 +56,9 @@ public:
 	// Constructor
 	UResourceCollection();
 
+	// Make sure the resources correspond to the EGB_Resources enum
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
 	// Gets resource collection reference
 	UFUNCTION(BlueprintCallable)
 	const TArray<FResourceAssetInfo>& GetResources() const;

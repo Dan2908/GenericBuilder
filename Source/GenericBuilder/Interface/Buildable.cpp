@@ -11,7 +11,7 @@
 // Get the current available buildings from the current game mode collection
 const TArray<FBuildingAssetInfo>* IBuildable::GetAvailableBuildings()
 {
-	if (AGenericBuilderGameModeBase* GM = FetchBuilderGM())
+	if (const AGenericBuilderGameModeBase* GM = FetchBuilderGM())
 	{
 		return &GM->GetAvailableBuildings();
 	}
@@ -22,9 +22,9 @@ const TArray<FBuildingAssetInfo>* IBuildable::GetAvailableBuildings()
 // ---------------------------------------------------------------
 
 // Tries to get builder game mode from the current object's world. Returns null if not found.
-inline AGenericBuilderGameModeBase* IBuildable::FetchBuilderGM()
+inline const AGenericBuilderGameModeBase* IBuildable::FetchBuilderGM() const
 {
-	if (UObject* ObjectPtr = Cast<UObject>(this))
+	if (const UObject* ObjectPtr = Cast<UObject>(this))
 	{
 		return Cast<AGenericBuilderGameModeBase>(ObjectPtr->GetWorld()->GetAuthGameMode());
 	}

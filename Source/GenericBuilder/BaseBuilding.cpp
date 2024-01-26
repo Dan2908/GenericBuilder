@@ -4,6 +4,7 @@
 #include "BaseBuilding.h"
 
 #include "Game/BuildingCollection.h"
+#include "GenericBuilderGameModeBase.h"
 #include "Helpers/Tracer.h"
 
 // Sets default values
@@ -77,7 +78,7 @@ const bool ABaseBuilding::IsObstructed()
 // Checks if the land under building is correct
 const bool ABaseBuilding::IsLandRight()
 {
-	Tracer BuildTracer(GetWorld(), GetActorTransform(), Extents.X, Extents.Y);
+	Tracer BuildTracer(GetWorld(), GetActorTransform(), GetExtents());
 
 	// Correct preview z position
 	const FVector PreviewLocation = GetActorLocation() * FVector(1, 1, 0) + FVector(0, 0, BuildTracer.GetHighestCorner());
@@ -105,6 +106,6 @@ const FResourceVault* ABaseBuilding::GetConstructionCost()
 // Gets the calculated extents for this buildable
 inline FVector2D ABaseBuilding::GetExtents() const
 {
-	return Extents;
+	return Extents * FetchBuilderGM()->GetGridUnitSize();
 }
 // ---------------------------------------------------------------
