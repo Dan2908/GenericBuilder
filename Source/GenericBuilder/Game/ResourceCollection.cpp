@@ -8,8 +8,19 @@
 
 UResourceCollection::UResourceCollection()
 {
-	// TODO: Initialize the resource collection array (TArray<FResourceAssetInfo> Resources)
-	// to hold each EGB_Resources in the same order, this must correspond to FResourceVault.
+
+}
+
+// Make sure the resources correspond to the EGB_Resources enum
+void UResourceCollection::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Resources.SetNum(EGB_Resources::Count);
+
+	for (int i = 0; i < EGB_Resources::Count; ++i)
+	{
+		Resources[i].ResourceID = TEnumAsByte<EGB_Resources>(i);
+	}
+
 }
 // ---------------------------------------------------------------
 
